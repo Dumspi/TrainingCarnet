@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 
-# ------------------- PARAMÈTRES FIXES -------------------
+# ---------- PARAMÈTRES ----------
 
 PHASES = [
     ("Prépa 1", date(2025, 9, 1), date(2025, 12, 31), "PPG/Technique", "PPG/Technique"),
@@ -19,7 +19,7 @@ EXOS_MUSCU = ["Épaulé", "Arraché", "Soulevé de terre", "Squat", "Pull over"]
 EXOS_PREPA = ["Médecine ball", "Passage de haies", "Série de médecine ball JB", "Gainage"]
 EXOS_TECH = ["Lancers de balles", "Courses d’élan", "Point technique précis", "Lancers de javelots"]
 
-TESTS_MAX_MUSCU = EXOS_MUSCU.copy()
+TESTS_MAX_MUSCU = EXOS_MUSCU
 TESTS_MAX_JAVELOT = [
     "Saut en longueur sans élan",
     "Éjection lancer de poids 4kg avant",
@@ -28,7 +28,7 @@ TESTS_MAX_JAVELOT = [
 ]
 TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
 
-# ------------------- FONCTIONS -------------------
+# ---------- FONCTIONS ----------
 
 def get_phase(current_date):
     for phase, start, end, mardi, jeudi in PHASES:
@@ -36,15 +36,21 @@ def get_phase(current_date):
             return phase, mardi, jeudi
     return "", "PPG/Technique", "PPG/Technique"  # Valeurs par défaut
 
-# ------------------- INTERFACE -------------------
+# ---------- INTERFACE ----------
 
-st.title("📘 Carnet de suivi d'entraînement - Javelot")
+st.set_page_config(page_title="Carnet Javelot", layout="centered")
+st.title("📘 Carnet de suivi - Javelot")
 
-selected_date = st.date_input("📅 Choisis la date de la séance :", date.today())
-weekday = selected_date.weekday()
+selected_date = st.date_input("📅 Choisis la date :", date.today())
+
+if isinstance(selected_date, date):
+    weekday = selected_date.weekday()
+else:
+    st.error("La date sélectionnée est invalide.")
+    st.stop()
 
 if weekday > 4:
-    st.warning("Pas de séance prévue ce jour-là (week-end).")
+    st.warning("Aucune séance prévue le week-end.")
     st.stop()
 
 jour = JOURS[weekday]
@@ -63,73 +69,68 @@ else:
 
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
 
-# ------------------- ONGLET SÉANCE -------------------
+# ---------- TABS ----------
 
-tab_seance, tab_tests = st.tabs(["Séance", "Tests max"])
+tab_seance, tab_tests = st.tabs(["📝 Séance", "🧪 Tests max"])
+
+# ---------- SÉANCE ----------
 
 with tab_seance:
     with st.form("formulaire_seance"):
-
         st.markdown("### 🏋️ Exercices réalisés")
 
-        def input_reps_for_exos(exos):
-            exos_reps = []
-            for exo in exos:
-                reps = st.text_input(f"Répétitions pour {exo}", key=f"reps_{exo}")
-                exos_reps.append(f"{exo} ({reps})" if reps else exo)
-            return exos_reps
+        def saisie_exercices(exercices):
+            resultats = []
+            for exo in exercices:
+                reps = st.text_input(f"{exo} – Répétitions :", key=f"reps_{exo}")
+                resultats.append(f"{exo} ({reps})" if reps else exo)
+            return resultats
 
-        exercices_selectionnes = []
         exercices_reps = []
         autres_exos = ""
 
         if jour == "Lundi":
-            exercices_selectionnes = st.multiselect("Exercices de musculation", EXOS_MUSCU)
-            exercices_reps = input_reps_for_exos(exercices_selectionnes)
+            selection = st.multiselect("Exos muscu", EXOS_MUSCU)
+            exercices_reps = saisie_exercices(selection)
 
         elif jour in ["Mardi", "Jeudi"]:
-            type_jour = st.radio("Type de séance", ["Prépa physique", "Technique", "Les deux"])
+            choix = st.radio("Type de séance :", ["Prépa physique", "Technique", "Les deux"])
             options = []
-            if type_jour in ["Prépa physique", "Les deux"]:
+            if choix in ["Prépa physique", "Les deux"]:
                 options += EXOS_PREPA
-            if type_jour in ["Technique", "Les deux"]:
+            if choix in ["Technique", "Les deux"]:
                 options += EXOS_TECH
-            exercices_selectionnes = st.multiselect("Exercices réalisés", options)
-            exercices_reps = input_reps_for_exos(exercices_selectionnes)
+            selection = st.multiselect("Exercices :", options)
+            exercices_reps = saisie_exercices(selection)
 
         else:
-            autres_exos = st.text_area("Exercices réalisés (texte libre)")
+            autres_exos = st.text_area("Exercices réalisés (libre)")
 
-        st.markdown("### 🩻 Ressenti / récupération")
-
-        douleur_type = st.radio("Douleur ressentie", ["Aucune", "Musculaire", "Articulaire"], index=0)
-        douleur_zone = st.text_input("Zone de douleur (si applicable)", disabled=douleur_type == "Aucune")
-
-        sommeil = st.slider("🌙 Sommeil (0 à 10)", 0, 10, 5)
+        st.markdown("### 💬 Ressenti & récupération")
+        douleur = st.radio("Douleur ressentie :", ["Aucune", "Musculaire", "Articulaire"])
+        zone_douleur = st.text_input("Zone de douleur :", disabled=(douleur == "Aucune"))
+        sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
         nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
+        rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
+        fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 = épuisé)", 1, 10, 5)
+        notes = st.text_area("Remarques complémentaires")
 
-        rpe = st.slider("🔥 Intensité (RPE 1 à 10)", 1, 10, 7)
-        fatigue = st.slider("😩 Fatigue générale (1 reposé — 10 épuisé)", 1, 10, 5)
+        submit = st.form_submit_button("💾 Enregistrer la séance")
 
-        notes = st.text_area("🗒️ Remarques / sensations")
-
-        submitted = st.form_submit_button("💾 Enregistrer la séance")
-
-        if submitted:
-            exercices_str = "; ".join(exercices_reps) if exercices_reps else autres_exos
-
+        if submit:
+            exos_final = "; ".join(exercices_reps) if exercices_reps else autres_exos
             if "data" not in st.session_state:
                 st.session_state.data = []
 
             st.session_state.data.append({
                 "Date": selected_date.strftime("%Y-%m-%d"),
                 "Jour": jour,
-                "Période": phase,
-                "Séance": type_seance,
-                "Exercices": exercices_str,
-                "Douleur": douleur_type,
-                "Zone douleur": douleur_zone,
+                "Phase": phase,
+                "Type": type_seance,
+                "Exercices": exos_final,
+                "Douleur": douleur,
+                "Zone douleur": zone_douleur,
                 "Sommeil": sommeil,
                 "Hydratation": hydratation,
                 "Nutrition": nutrition,
@@ -138,54 +139,53 @@ with tab_seance:
                 "Notes": notes
             })
 
-            st.success("✅ Séance enregistrée !")
+            st.success("Séance enregistrée avec succès ✅")
 
-# ------------------- ONGLET TESTS -------------------
+# ---------- TESTS ----------
 
 with tab_tests:
-    st.markdown("### 🧪 Tests max")
-    tests_resultats = {}
+    st.markdown("### 🧪 Tests de performance")
+    tests = {}
 
-    def input_test_result(test_name):
-        return st.number_input(f"Résultat - {test_name}", min_value=0.0, step=0.1, format="%.2f")
+    def saisir_test(label):
+        return st.number_input(f"{label} :", min_value=0.0, step=0.1)
 
     if jour == "Lundi":
-        tests_selectionnes = st.multiselect("Tests muscu", TESTS_MAX_MUSCU)
-        for test in tests_selectionnes:
-            tests_resultats[test] = input_test_result(test)
+        tests_choisis = st.multiselect("Tests muscu", TESTS_MAX_MUSCU)
+        for test in tests_choisis:
+            tests[test] = saisir_test(test)
 
     if jour in ["Mardi", "Jeudi"]:
-        tests_selectionnes = st.multiselect("Tests explosivité / javelot", TESTS_MAX_JAVELOT)
-        for test in tests_selectionnes:
-            tests_resultats[test] = input_test_result(test)
+        tests_choisis = st.multiselect("Tests explosivité", TESTS_MAX_JAVELOT)
+        for test in tests_choisis:
+            tests[test] = saisir_test(test)
 
-    if st.checkbox("Ajouter test : Saut en hauteur sans élan"):
-        tests_resultats[TEST_SAUT_HAUTEUR] = input_test_result(TEST_SAUT_HAUTEUR)
+    if st.checkbox("Inclure saut en hauteur sans élan"):
+        tests[TEST_SAUT_HAUTEUR] = saisir_test(TEST_SAUT_HAUTEUR)
 
     if st.button("💾 Enregistrer les tests"):
         if "data" not in st.session_state:
             st.session_state.data = []
 
-        entry = {
+        enregistrement = {
             "Date": selected_date.strftime("%Y-%m-%d"),
             "Jour": jour,
-            "Période": phase,
-            "Séance": type_seance
+            "Phase": phase,
+            "Type": type_seance
         }
-        entry.update(tests_resultats)
+        enregistrement.update(tests)
+        st.session_state.data.append(enregistrement)
+        st.success("Tests enregistrés ✅")
 
-        st.session_state.data.append(entry)
-        st.success("✅ Tests enregistrés !")
-
-# ------------------- EXPORT -------------------
+# ---------- EXPORT ----------
 
 if "data" in st.session_state and st.session_state.data:
     df = pd.DataFrame(st.session_state.data)
-    st.subheader("📊 Historique des entrées")
+    st.subheader("📊 Historique")
     st.dataframe(df)
 
     st.download_button(
-        "⬇️ Télécharger en Excel",
+        "⬇️ Télécharger l'historique (.xlsx)",
         data=df.to_excel(index=False),
         file_name="carnet_suivi.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
