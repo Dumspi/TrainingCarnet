@@ -85,14 +85,16 @@ with tab_seance:
         def saisie_exercices(exercices):
             resultats = []
             for exo in exercices:
-                col1, col2, col3 = st.columns([3, 1, 1])
+                col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
                 with col1:
                     st.markdown(f"**{exo}**")
                 with col2:
                     charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=2.5, key=f"charge_{exo}")
                 with col3:
                     reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-                resultats.append(f"{exo} – {charge} kg x {reps} reps")
+                with col4:
+                    series = st.number_input(f"Séries ({exo})", min_value=1, step=1, key=f"series_{exo}")
+                resultats.append(f"{exo} – {charge} kg x {reps} reps x {series} séries")
             return resultats
 
         if jour in ["Lundi", "Mercredi", "Vendredi"]:
@@ -215,23 +217,4 @@ with tab_tests:
 
         enregistrement = {
             "Date": selected_date.strftime("%Y-%m-%d"),
-            "Jour": jour,
-            "Phase": phase,
-            "Type": type_seance
-        }
-        enregistrement.update(tests)
-        st.session_state.data.append(enregistrement)
-        st.success("Tests enregistrés ✅")
-
-# ---------- EXPORT ----------
-if "data" in st.session_state and st.session_state.data:
-    df = pd.DataFrame(st.session_state.data)
-    st.subheader("📊 Historique")
-    st.dataframe(df)
-
-    st.download_button(
-        "⬇️ Télécharger l'historique (.xlsx)",
-        data=df.to_excel(index=False),
-        file_name="carnet_suivi.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+            "Jour":
