@@ -214,9 +214,12 @@ with tab_tests:
     if st.button("💾 Enregistrer les tests"):
         if "tests" not in st.session_state:
             st.session_state.tests = []
+            
+enregistrement = {
+    "Date": selected_date.strftime("%Y-%m-%d"),
+    "Jour": jour,
+    "Phase": phase,
+    "Type": type_seance,
+    # autres champs...
+}
 
-        enregistrement = {
-            "Date": selected_date.strftime("%Y-%m-%d"),
-            "Jour": jour,
-            "Phase": phase,
-            "Type": type_se
