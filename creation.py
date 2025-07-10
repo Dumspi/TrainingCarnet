@@ -43,11 +43,11 @@ st.title("📘 Carnet de suivi - Javelot")
 
 selected_date = st.date_input("📅 Choisis la date :", date.today())
 
-if isinstance(selected_date, date):
-    weekday = selected_date.weekday()
-else:
+if not isinstance(selected_date, date):
     st.error("La date sélectionnée est invalide.")
     st.stop()
+
+weekday = selected_date.weekday()
 
 if weekday > 4:
     st.warning("Aucune séance prévue le week-end.")
@@ -79,6 +79,11 @@ with tab_seance:
     with st.form("formulaire_seance"):
         st.markdown("### 🏋️ Exercices réalisés")
 
+        exercices_reps = []
+        autres_exos = ""
+        prepa_comment = ""
+        tech_comment = ""
+
         def saisie_exercices(exercices):
             resultats = []
             for exo in exercices:
@@ -86,22 +91,20 @@ with tab_seance:
                 resultats.append(f"{exo} ({reps})" if reps else exo)
             return resultats
 
-        exercices_reps = []
-        autres_exos = ""
-
         if jour == "Lundi":
             selection = st.multiselect("Exos muscu", EXOS_MUSCU)
             exercices_reps = saisie_exercices(selection)
 
         elif jour in ["Mardi", "Jeudi"]:
-            choix = st.radio("Type de séance :", ["Prépa physique", "Technique", "Les deux"])
-            options = []
-            if choix in ["Prépa physique", "Les deux"]:
-                options += EXOS_PREPA
-            if choix in ["Technique", "Les deux"]:
-                options += EXOS_TECH
-            selection = st.multiselect("Exercices :", options)
-            exercices_reps = saisie_exercices(selection)
+            st.markdown("#### Préparation Physique")
+            prepa_selection = st.multiselect("Exercices prépa physique :", EXOS_PREPA, key="prepa_exos")
+            prepa_comment = st.text_area("Commentaires prépa physique :", key="prepa_comment")
+
+            st.markdown("#### Technique")
+            tech_selection = st.multiselect("Exercices technique :", EXOS_TECH, key="tech_exos")
+            tech_comment = st.text_area("Commentaires technique :", key="tech_comment")
+
+            exercices_reps = prepa_selection + tech_selection
 
         else:
             autres_exos = st.text_area("Exercices réalisés (libre)")
@@ -120,6 +123,13 @@ with tab_seance:
 
         if submit:
             exos_final = "; ".join(exercices_reps) if exercices_reps else autres_exos
+
+            if jour in ["Mardi", "Jeudi"]:
+                if prepa_comment:
+                    exos_final += f"\nPrépa physique – Commentaires : {prepa_comment}"
+                if tech_comment:
+                    exos_final += f"\nTechnique – Commentaires : {tech_comment}"
+
             if "data" not in st.session_state:
                 st.session_state.data = []
 
@@ -148,7 +158,7 @@ with tab_tests:
     tests = {}
 
     def saisir_test(label):
-        return st.number_input(f"{label} :", min_value=0.0, step=0.1)
+        return st.number_input(f"{label} :", min_value=0.0, step=0.1, key=f"test_{label}")
 
     if jour == "Lundi":
         tests_choisis = st.multiselect("Tests muscu", TESTS_MAX_MUSCU)
