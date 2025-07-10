@@ -218,3 +218,29 @@ with tab_tests:
         enregistrement = {
             "Date": selected_date.strftime("%Y-%m-%d"),
             "Jour":
+  if st.button("💾 Enregistrer les tests"):
+            if "data" not in st.session_state:
+                st.session_state.data = []
+
+            enregistrement = {
+                "Date": selected_date.strftime("%Y-%m-%d"),
+                "Jour": jour,
+                "Phase": phase,
+                "Type": type_seance
+            }
+            enregistrement.update(tests)
+            st.session_state.data.append(enregistrement)
+            st.success("Tests enregistrés ✅")
+
+# ---------- EXPORT ----------
+if "data" in st.session_state and st.session_state.data:
+    df = pd.DataFrame(st.session_state.data)
+    st.subheader("📊 Historique")
+    st.dataframe(df)
+
+    st.download_button(
+        "⬇️ Télécharger l'historique (.xlsx)",
+        data=df.to_excel(index=False),
+        file_name="carnet_suivi.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
