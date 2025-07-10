@@ -105,4 +105,3 @@ if "data" in st.session_state and st.session_state.data:
     st.dataframe(df)
 
     st.download_button("⬇️ Télécharger en Excel", data=df.to_excel(index=False), file_name="carnet_suivi.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
