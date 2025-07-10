@@ -80,11 +80,11 @@ else:
 
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
 
-# ---------- TABS ----------
+# ---------- ONGLETS ----------
 
-tab_seance, tab_tests = st.tabs(["📝 Séance", "🧪 Tests max"])
+tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", "🧪 Tests max"])
 
-# ---------- SÉANCE ----------
+# ---------- ONGLET SÉANCE ----------
 
 with tab_seance:
     with st.form("formulaire_seance"):
@@ -99,7 +99,10 @@ with tab_seance:
             resultats = []
             for exo in exercices:
                 reps = st.text_input(f"{exo} – Répétitions :", key=f"reps_{exo}")
-                resultats.append(f"{exo} ({reps})" if reps else exo)
+                if reps:
+                    resultats.append(f"{exo} ({reps})")
+                else:
+                    resultats.append(exo)
             return resultats
 
         if jour == "Lundi":
@@ -119,20 +122,6 @@ with tab_seance:
 
         else:
             autres_exos = st.text_area("Exercices réalisés (libre)")
-
-        st.markdown("### 💬 Ressenti & récupération")
-        douleur = st.radio("Douleur ressentie :", ["Aucune", "Musculaire", "Articulaire"])
-
-        if douleur != "Aucune":
-            zones_selectionnees = st.multiselect("Zones de douleur (plusieurs possibles) :", ZONES_DOULEUR)
-            autre_zone = st.text_input("Autre zone de douleur (si non listée) :")
-        else:
-            zones_selectionnees = []
-            autre_zone = ""
-
-        zone_douleur_finale = ", ".join(zones_selectionnees)
-        if autre_zone.strip():
-            zone_douleur_finale += (", " if zone_douleur_finale else "") + autre_zone.strip()
 
         sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
@@ -161,8 +150,6 @@ with tab_seance:
                 "Phase": phase,
                 "Type": type_seance,
                 "Exercices": exos_final,
-                "Douleur": douleur,
-                "Zones douleur": zone_douleur_finale,
                 "Sommeil": sommeil,
                 "Hydratation": hydratation,
                 "Nutrition": nutrition,
@@ -173,7 +160,50 @@ with tab_seance:
 
             st.success("Séance enregistrée avec succès ✅")
 
-# ---------- TESTS ----------
+# ---------- ONGLET DOULEUR ----------
+
+with tab_douleur:
+    with st.form("formulaire_douleur"):
+        st.markdown("### ⚠️ Douleur")
+
+        douleur = st.radio("Douleur ressentie :", ["Aucune", "Musculaire", "Articulaire"], key="douleur_radio")
+
+        if douleur in ["Musculaire", "Articulaire"]:
+            zones_selectionnees = st.multiselect(
+                "Zones de douleur (plusieurs possibles) :",
+                ZONES_DOULEUR,
+                key="zones_douleur"
+            )
+            autre_zone = st.text_input("Autre zone de douleur (si non listée) :", key="autre_zone")
+        else:
+            zones_selectionnees = []
+            autre_zone = ""
+
+        zone_douleur_finale = ", ".join(zones_selectionnees)
+        if autre_zone.strip():
+            zone_douleur_finale += (", " if zone_douleur_finale else "") + autre_zone.strip()
+
+        commentaire_douleur = st.text_area("Commentaires douleur / sensations")
+
+        submit_douleur = st.form_submit_button("💾 Enregistrer la douleur")
+
+        if submit_douleur:
+            if "data" not in st.session_state:
+                st.session_state.data = []
+
+            st.session_state.data.append({
+                "Date": selected_date.strftime("%Y-%m-%d"),
+                "Jour": jour,
+                "Phase": phase,
+                "Type": type_seance,
+                "Douleur": douleur,
+                "Zones douleur": zone_douleur_finale,
+                "Commentaire douleur": commentaire_douleur
+            })
+
+            st.success("Douleur enregistrée ✅")
+
+# ---------- ONGLET TESTS ----------
 
 with tab_tests:
     st.markdown("### 🧪 Tests de performance")
