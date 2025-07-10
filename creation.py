@@ -28,6 +28,17 @@ TESTS_MAX_JAVELOT = [
 ]
 TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
 
+ZONES_DOULEUR = [
+    "Épaule droite", "Épaule gauche",
+    "Coude droit", "Coude gauche",
+    "Poignet droit", "Poignet gauche",
+    "Dos haut", "Bas du dos",
+    "Hanche droite", "Hanche gauche",
+    "Genou droit", "Genou gauche",
+    "Cheville droite", "Cheville gauche",
+    "Cuisses", "Ischio-jambiers", "Mollets"
+]
+
 # ---------- FONCTIONS ----------
 
 def get_phase(current_date):
@@ -111,7 +122,18 @@ with tab_seance:
 
         st.markdown("### 💬 Ressenti & récupération")
         douleur = st.radio("Douleur ressentie :", ["Aucune", "Musculaire", "Articulaire"])
-        zone_douleur = st.text_input("Zone de douleur :", disabled=(douleur == "Aucune"))
+
+        if douleur != "Aucune":
+            zones_selectionnees = st.multiselect("Zones de douleur (plusieurs possibles) :", ZONES_DOULEUR)
+            autre_zone = st.text_input("Autre zone de douleur (si non listée) :")
+        else:
+            zones_selectionnees = []
+            autre_zone = ""
+
+        zone_douleur_finale = ", ".join(zones_selectionnees)
+        if autre_zone.strip():
+            zone_douleur_finale += (", " if zone_douleur_finale else "") + autre_zone.strip()
+
         sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
         nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
@@ -140,7 +162,7 @@ with tab_seance:
                 "Type": type_seance,
                 "Exercices": exos_final,
                 "Douleur": douleur,
-                "Zone douleur": zone_douleur,
+                "Zones douleur": zone_douleur_finale,
                 "Sommeil": sommeil,
                 "Hydratation": hydratation,
                 "Nutrition": nutrition,
