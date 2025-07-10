@@ -15,28 +15,29 @@ PHASES = [
 
 JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
 
-EXOS_MUSCU = ["Épaulé", "Arraché", "Soulevé de terre", "Squat", "Pull over"]
+EXOS_MUSCU = [
+    "Épaulé", "Épaulé avec bandes", "Arraché", "Arraché avec bandes", "Arraché force",
+    "Squat", "Squat avec ceinture", "Demi-squat", "Pull over avec mouvement du bassin",
+    "Pull over avec haltère", "Développé couché strict", "Développé couché avec mouvement du bassin",
+    "Renfo ischios", "Renfo adducteurs", "Tirage nuque", "Tirage rowing", "Abdos",
+    "Exos lombaires", "Renfo cheville", "Dips", "Vélo", "Rowing machine", "Lancer de médecine ball"
+]
+
 EXOS_PREPA = ["Médecine ball", "Passage de haies", "Série de médecine ball JB", "Gainage"]
 EXOS_TECH = ["Lancers de balles", "Courses d’élan", "Point technique précis", "Lancers de javelots"]
 
 TESTS_MAX_MUSCU = EXOS_MUSCU
 TESTS_MAX_JAVELOT = [
-    "Saut en longueur sans élan",
-    "Éjection lancer de poids 4kg avant",
-    "Éjection lancer de poids 4kg arrière",
-    "Lancer médecine ball 4kg"
+    "Saut en longueur sans élan", "Éjection lancer de poids 4kg avant",
+    "Éjection lancer de poids 4kg arrière", "Lancer médecine ball 4kg"
 ]
 TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
 
 ZONES_DOULEUR = [
-    "Épaule droite", "Épaule gauche",
-    "Coude droit", "Coude gauche",
-    "Poignet droit", "Poignet gauche",
-    "Dos haut", "Bas du dos",
-    "Hanche droite", "Hanche gauche",
-    "Genou droit", "Genou gauche",
-    "Cheville droite", "Cheville gauche",
-    "Cuisses", "Ischio-jambiers", "Mollets"
+    "Épaule droite", "Épaule gauche", "Coude droit", "Coude gauche",
+    "Poignet droit", "Poignet gauche", "Dos haut", "Bas du dos",
+    "Hanche droite", "Hanche gauche", "Genou droit", "Genou gauche",
+    "Cheville droite", "Cheville gauche", "Cuisses", "Ischio-jambiers", "Mollets"
 ]
 
 # ---------- FONCTIONS ----------
@@ -45,7 +46,7 @@ def get_phase(current_date):
     for phase, start, end, mardi, jeudi in PHASES:
         if start <= current_date <= end:
             return phase, mardi, jeudi
-    return "", "PPG/Technique", "PPG/Technique"  # Valeurs par défaut
+    return "", "PPG/Technique", "PPG/Technique"
 
 # ---------- INTERFACE ----------
 
@@ -53,13 +54,11 @@ st.set_page_config(page_title="Carnet Javelot", layout="centered")
 st.title("📘 Carnet de suivi - Javelot")
 
 selected_date = st.date_input("📅 Choisis la date :", date.today())
-
 if not isinstance(selected_date, date):
     st.error("La date sélectionnée est invalide.")
     st.stop()
 
 weekday = selected_date.weekday()
-
 if weekday > 4:
     st.warning("Aucune séance prévue le week-end.")
     st.stop()
@@ -98,11 +97,15 @@ with tab_seance:
         def saisie_exercices(exercices):
             resultats = []
             for exo in exercices:
-                reps = st.text_input(f"{exo} – Répétitions :", key=f"reps_{exo}")
-                if reps:
-                    resultats.append(f"{exo} ({reps})")
-                else:
-                    resultats.append(exo)
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    reps = st.text_input(f"{exo} – Répétitions :", key=f"reps_{exo}")
+                with col2:
+                    restitution = st.checkbox("Restitution ?", key=f"restit_{exo}")
+                label = f"{exo} ({reps})" if reps else exo
+                if restitution:
+                    label += " ✅"
+                resultats.append(label)
             return resultats
 
         if jour == "Lundi":
@@ -166,18 +169,14 @@ with tab_douleur:
     with st.form("formulaire_douleur"):
         st.markdown("### ⚠️ Douleur")
 
-        douleur = st.radio("Douleur ressentie :", ["Aucune", "Musculaire", "Articulaire"], key="douleur_radio")
+        type_douleur = st.selectbox("Type de douleur :", ["Aucune", "Musculaire", "Articulaire", "Tendineuse"], key="type_douleur")
 
-        if douleur in ["Musculaire", "Articulaire"]:
-            zones_selectionnees = st.multiselect(
-                "Zones de douleur (plusieurs possibles) :",
-                ZONES_DOULEUR,
-                key="zones_douleur"
-            )
-            autre_zone = st.text_input("Autre zone de douleur (si non listée) :", key="autre_zone")
-        else:
-            zones_selectionnees = []
-            autre_zone = ""
+        zones_selectionnees = []
+        autre_zone = ""
+
+        if type_douleur != "Aucune":
+            zones_selectionnees = st.multiselect("Zones concernées :", ZONES_DOULEUR, key="zones_douleur")
+            autre_zone = st.text_input("Autre zone non listée :", key="autre_zone")
 
         zone_douleur_finale = ", ".join(zones_selectionnees)
         if autre_zone.strip():
@@ -196,7 +195,7 @@ with tab_douleur:
                 "Jour": jour,
                 "Phase": phase,
                 "Type": type_seance,
-                "Douleur": douleur,
+                "Douleur": type_douleur,
                 "Zones douleur": zone_douleur_finale,
                 "Commentaire douleur": commentaire_douleur
             })
