@@ -11,7 +11,6 @@ PHASES = [
     ("Prépa 2", date(2026, 3, 1), date(2026, 4, 15), "PPG/Technique", "PPG/Technique"),
     ("Pré-compétition avril-mai", date(2026, 4, 16), date(2026, 5, 15), "PPG/Technique", "Technique"),
     ("Compétition mai-juillet", date(2026, 5, 16), date(2026, 7, 15), "Technique", "Technique"),
-    ("Repos août", date(2026, 8, 1), date(2026, 8, 31), "Repos", "Repos"),
 ]
 
 JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
@@ -28,6 +27,14 @@ TESTS_MAX_JAVELOT = [
     "Lancer médecine ball 4kg"
 ]
 TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
+
+# ------------------- FONCTIONS -------------------
+
+def get_phase(current_date):
+    for phase, start, end, mardi, jeudi in PHASES:
+        if start <= current_date <= end:
+            return phase, mardi, jeudi
+    return "", "PPG/Technique", "PPG/Technique"  # Valeurs par défaut
 
 # ------------------- INTERFACE -------------------
 
@@ -170,7 +177,7 @@ with tab_tests:
         st.session_state.data.append(entry)
         st.success("✅ Tests enregistrés !")
 
-# ------------------- HISTORIQUE + EXPORT -------------------
+# ------------------- EXPORT -------------------
 
 if "data" in st.session_state and st.session_state.data:
     df = pd.DataFrame(st.session_state.data)
@@ -181,5 +188,5 @@ if "data" in st.session_state and st.session_state.data:
         "⬇️ Télécharger en Excel",
         data=df.to_excel(index=False),
         file_name="carnet_suivi.xlsx",
-mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
