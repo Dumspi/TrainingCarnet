@@ -189,4 +189,5 @@ if "data" in st.session_state and st.session_state.data:
         "⬇️ Télécharger en Excel",
         data=df.to_excel(index=False),
         file_name="carnet_suivi.xlsx",
-        mime="application/vnd.openxmlformats-off
+mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
