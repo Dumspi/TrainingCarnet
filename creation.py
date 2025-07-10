@@ -82,24 +82,27 @@ with tab_seance:
         prepa_comment = ""
         tech_comment = ""
 
-        def saisie_exercices(exercices):
+        def saisie_exercices_muscu(exercices):
             resultats = []
             for exo in exercices:
-                col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+                col1, col2, col3, col4 = st.columns([3, 2, 2, 2])
                 with col1:
                     st.markdown(f"**{exo}**")
                 with col2:
-                    charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=2.5, key=f"charge_{exo}")
+                    charge = st.number_input(f"Charge (kg) ({exo})", min_value=0.0, step=2.5, key=f"charge_{exo}")
                 with col3:
                     reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
                 with col4:
-                    series = st.number_input(f"Séries ({exo})", min_value=1, step=1, key=f"series_{exo}")
+                    series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
                 resultats.append(f"{exo} – {charge} kg x {reps} reps x {series} séries")
             return resultats
 
+        def saisie_exercices(exercices):
+            return [exo for exo in exercices]
+
         if jour in ["Lundi", "Mercredi", "Vendredi"]:
             selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
-            exercices_reps = saisie_exercices(selection)
+            exercices_reps = saisie_exercices_muscu(selection)
 
         elif jour in ["Mardi", "Jeudi"]:
             st.markdown("#### Préparation Physique")
@@ -199,48 +202,38 @@ with tab_tests:
         return st.number_input(f"{label} :", min_value=0.0, step=0.1, key=f"test_{label}")
 
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
-        tests_choisis = st.multiselect("Tests muscu", TESTS_MAX_MUSCU)
-        for test in tests_choisis:
-            tests[test] = saisir_test(test)
-
-    if jour in ["Mardi", "Jeudi"]:
-        tests_choisis = st.multiselect("Tests explosivité", TESTS_MAX_JAVELOT)
-        for test in tests_choisis:
-            tests[test] = saisir_test(test)
-
-    if st.checkbox("Inclure saut en hauteur sans élan"):
-        tests[TEST_SAUT_HAUTEUR] = saisir_test(TEST_SAUT_HAUTEUR)
+        st.markdown("#### Tests max musculation")
+        for exo in TESTS_MAX_MUSCU:
+            val = saisir_test(exo)
+            tests[exo] = val
+    elif jour in ["Mardi", "Jeudi"]:
+        st.markdown("#### Tests max javelot")
+        for test in TESTS_MAX_JAVELOT:
+            val = saisir_test(test)
+            tests[test] = val
+        saut = saisir_test(TEST_SAUT_HAUTEUR)
+        tests[TEST_SAUT_HAUTEUR] = saut
 
     if st.button("💾 Enregistrer les tests"):
-        if "data" not in st.session_state:
-            st.session_state.data = []
-
-        enregistrement = {
+        if "tests" not in st.session_state:
+            st.session_state.tests = []
+        st.session_state.tests.append({
             "Date": selected_date.strftime("%Y-%m-%d"),
-            "Jour":
-  if st.button("💾 Enregistrer les tests"):
-            if "data" not in st.session_state:
-                st.session_state.data = []
+            "Jour": jour,
+            "Phase": phase,
+            "Type": type_seance,
+            **tests
+        })
+        st.success("Tests enregistrés ✅")
 
-            enregistrement = {
-                "Date": selected_date.strftime("%Y-%m-%d"),
-                "Jour": jour,
-                "Phase": phase,
-                "Type": type_seance
-            }
-            enregistrement.update(tests)
-            st.session_state.data.append(enregistrement)
-            st.success("Tests enregistrés ✅")
+# ---------- AFFICHAGE DES DONNÉES ----------
 
-# ---------- EXPORT ----------
-if "data" in st.session_state and st.session_state.data:
+if "data" in st.session_state:
+    st.markdown("## 📊 Historique des enregistrements")
     df = pd.DataFrame(st.session_state.data)
-    st.subheader("📊 Historique")
     st.dataframe(df)
 
-    st.download_button(
-        "⬇️ Télécharger l'historique (.xlsx)",
-        data=df.to_excel(index=False),
-        file_name="carnet_suivi.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+if "tests" in st.session_state:
+    st.markdown("## 📈 Historique des tests")
+    df_tests = pd.DataFrame(st.session_state.tests)
+    st.dataframe(df_tests)
