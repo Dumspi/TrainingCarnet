@@ -26,17 +26,9 @@ EXOS_MUSCU = [
 EXOS_PREPA = ["Médecine ball", "Passage de haies", "Série de médecine ball JB", "Gainage"]
 EXOS_TECH = ["Lancers de balles", "Courses d’élan", "Point technique précis", "Lancers de javelots"]
 
-TESTS_MAX_MUSCU = EXOS_MUSCU
-TESTS_MAX_JAVELOT = [
-    "Saut en longueur sans élan", "Éjection lancer de poids 4kg avant",
-    "Éjection lancer de poids 4kg arrière", "Lancer médecine ball 4kg"
-]
-TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
-
 ZONES_DOULEUR = [
-    "Épaule droite", "Épaule gauche", "Coude droit", "Coude gauche",
-    "Poignet droit", "Poignet gauche", "Dos haut", "Bas du dos",
-    "Hanche droite", "Hanche gauche", "Genou droit", "Genou gauche",
+    "Épaule droite", "Épaule gauche", "Coude droit", "Coude gauche", "Poignet droit", "Poignet gauche",
+    "Dos haut", "Bas du dos", "Hanche droite", "Hanche gauche", "Genou droit", "Genou gauche",
     "Cheville droite", "Cheville gauche", "Cuisses", "Ischio-jambiers", "Mollets"
 ]
 
@@ -66,65 +58,26 @@ if weekday > 4:
 jour = JOURS[weekday]
 phase, mardi_type, jeudi_type = get_phase(selected_date)
 
-if jour == "Lundi":
-    type_seance = "Muscu"
-elif jour == "Mardi":
-    type_seance = mardi_type
-elif jour == "Mercredi":
-    type_seance = "Gym/Muscu/Mobilité"
-elif jour == "Jeudi":
-    type_seance = jeudi_type
-else:
-    type_seance = "Muscu"
+type_seance = "Muscu" if jour in ["Lundi", "Mercredi", "Vendredi"] else (mardi_type if jour == "Mardi" else jeudi_type)
 
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
 
-# ---------- ONGLETS ----------
-
-tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", "🧪 Tests max"])
-
-# ---------- ONGLET SÉANCE ----------
-
-with tab_seance:
-    with st.form("formulaire_seance"):
-        st.markdown("### 🏋️ Exercices réalisés")
-
+# ---------- SAISIE MUSCU ----------
+if type_seance == "Muscu":
+    with st.form("form_muscu"):
+        st.markdown("### 🏋️ Exercices de musculation")
+        selection = st.multiselect("Exercices effectués :", EXOS_MUSCU)
         exercices_reps = []
-        autres_exos = ""
-        prepa_comment = ""
-        tech_comment = ""
 
-        def saisie_exercices(exercices):
-            resultats = []
-            for exo in exercices:
-                col1, col2 = st.columns([3, 1])
-                with col1:
-                    reps = st.text_input(f"{exo} – Répétitions :", key=f"reps_{exo}")
-                with col2:
-                    restitution = st.checkbox("Restitution ?", key=f"restit_{exo}")
-                label = f"{exo} ({reps})" if reps else exo
-                if restitution:
-                    label += " ✅"
-                resultats.append(label)
-            return resultats
-
-        if jour == "Lundi":
-            selection = st.multiselect("Exos muscu", EXOS_MUSCU)
-            exercices_reps = saisie_exercices(selection)
-
-        elif jour in ["Mardi", "Jeudi"]:
-            st.markdown("#### Préparation Physique")
-            prepa_selection = st.multiselect("Exercices prépa physique :", EXOS_PREPA, key="prepa_exos")
-            prepa_comment = st.text_area("Commentaires prépa physique :", key="prepa_comment")
-
-            st.markdown("#### Technique")
-            tech_selection = st.multiselect("Exercices technique :", EXOS_TECH, key="tech_exos")
-            tech_comment = st.text_area("Commentaires technique :", key="tech_comment")
-
-            exercices_reps = prepa_selection + tech_selection
-
-        else:
-            autres_exos = st.text_area("Exercices réalisés (libre)")
+        for exo in selection:
+            col1, col2, col3 = st.columns([3, 1, 1])
+            with col1:
+                st.markdown(f"**{exo}**")
+            with col2:
+                charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=2.5, key=f"charge_{exo}")
+            with col3:
+                reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+            exercices_reps.append(f"{exo} – {charge} kg x {reps} reps")
 
         sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
@@ -136,14 +89,6 @@ with tab_seance:
         submit = st.form_submit_button("💾 Enregistrer la séance")
 
         if submit:
-            exos_final = "; ".join(exercices_reps) if exercices_reps else autres_exos
-
-            if jour in ["Mardi", "Jeudi"]:
-                if prepa_comment:
-                    exos_final += f"\nPrépa physique – Commentaires : {prepa_comment}"
-                if tech_comment:
-                    exos_final += f"\nTechnique – Commentaires : {tech_comment}"
-
             if "data" not in st.session_state:
                 st.session_state.data = []
 
@@ -152,7 +97,7 @@ with tab_seance:
                 "Jour": jour,
                 "Phase": phase,
                 "Type": type_seance,
-                "Exercices": exos_final,
+                "Exercices": "; ".join(exercices_reps),
                 "Sommeil": sommeil,
                 "Hydratation": hydratation,
                 "Nutrition": nutrition,
@@ -161,85 +106,45 @@ with tab_seance:
                 "Notes": notes
             })
 
-            st.success("Séance enregistrée avec succès ✅")
+            st.success("Séance enregistrée ✅")
 
 # ---------- ONGLET DOULEUR ----------
+st.markdown("### ⚠️ Douleur")
+with st.form("formulaire_douleur"):
+    type_douleur = st.selectbox("Type de douleur :", ["Aucune", "Musculaire", "Articulaire", "Tendineuse"], key="type_douleur")
 
-with tab_douleur:
-    with st.form("formulaire_douleur"):
-        st.markdown("### ⚠️ Douleur")
+    zones_selectionnees = []
+    autre_zone = ""
 
-        type_douleur = st.selectbox("Type de douleur :", ["Aucune", "Musculaire", "Articulaire", "Tendineuse"], key="type_douleur")
+    if type_douleur != "Aucune":
+        zones_selectionnees = st.multiselect("Zones concernées :", ZONES_DOULEUR, key="zones_douleur")
+        autre_zone = st.text_input("Autre zone non listée :", key="autre_zone")
 
-        zones_selectionnees = []
-        autre_zone = ""
+    zone_douleur_finale = ", ".join(zones_selectionnees)
+    if autre_zone.strip():
+        zone_douleur_finale += (", " if zone_douleur_finale else "") + autre_zone.strip()
 
-        if type_douleur != "Aucune":
-            zones_selectionnees = st.multiselect("Zones concernées :", ZONES_DOULEUR, key="zones_douleur")
-            autre_zone = st.text_input("Autre zone non listée :", key="autre_zone")
+    commentaire_douleur = st.text_area("Commentaires douleur / sensations")
 
-        zone_douleur_finale = ", ".join(zones_selectionnees)
-        if autre_zone.strip():
-            zone_douleur_finale += (", " if zone_douleur_finale else "") + autre_zone.strip()
+    submit_douleur = st.form_submit_button("💾 Enregistrer la douleur")
 
-        commentaire_douleur = st.text_area("Commentaires douleur / sensations")
-
-        submit_douleur = st.form_submit_button("💾 Enregistrer la douleur")
-
-        if submit_douleur:
-            if "data" not in st.session_state:
-                st.session_state.data = []
-
-            st.session_state.data.append({
-                "Date": selected_date.strftime("%Y-%m-%d"),
-                "Jour": jour,
-                "Phase": phase,
-                "Type": type_seance,
-                "Douleur": type_douleur,
-                "Zones douleur": zone_douleur_finale,
-                "Commentaire douleur": commentaire_douleur
-            })
-
-            st.success("Douleur enregistrée ✅")
-
-# ---------- ONGLET TESTS ----------
-
-with tab_tests:
-    st.markdown("### 🧪 Tests de performance")
-    tests = {}
-
-    def saisir_test(label):
-        return st.number_input(f"{label} :", min_value=0.0, step=0.1, key=f"test_{label}")
-
-    if jour == "Lundi":
-        tests_choisis = st.multiselect("Tests muscu", TESTS_MAX_MUSCU)
-        for test in tests_choisis:
-            tests[test] = saisir_test(test)
-
-    if jour in ["Mardi", "Jeudi"]:
-        tests_choisis = st.multiselect("Tests explosivité", TESTS_MAX_JAVELOT)
-        for test in tests_choisis:
-            tests[test] = saisir_test(test)
-
-    if st.checkbox("Inclure saut en hauteur sans élan"):
-        tests[TEST_SAUT_HAUTEUR] = saisir_test(TEST_SAUT_HAUTEUR)
-
-    if st.button("💾 Enregistrer les tests"):
+    if submit_douleur:
         if "data" not in st.session_state:
             st.session_state.data = []
 
-        enregistrement = {
+        st.session_state.data.append({
             "Date": selected_date.strftime("%Y-%m-%d"),
             "Jour": jour,
             "Phase": phase,
-            "Type": type_seance
-        }
-        enregistrement.update(tests)
-        st.session_state.data.append(enregistrement)
-        st.success("Tests enregistrés ✅")
+            "Type": type_seance,
+            "Douleur": type_douleur,
+            "Zones douleur": zone_douleur_finale,
+            "Commentaire douleur": commentaire_douleur
+        })
+
+        st.success("Douleur enregistrée ✅")
 
 # ---------- EXPORT ----------
-
 if "data" in st.session_state and st.session_state.data:
     df = pd.DataFrame(st.session_state.data)
     st.subheader("📊 Historique")
