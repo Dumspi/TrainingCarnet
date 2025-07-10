@@ -14,20 +14,6 @@ PHASES = [
     ("Repos août", date(2026, 8, 1), date(2026, 8, 31), "Repos", "Repos"),
 ]
 
-REGIMES = {
-    9: "5x5",
-    10: "5x5",
-    11: "15 → 8 reps",
-    12: "15 → 8 reps",
-    1: "x5",
-    2: "x3",
-    3: "x10",
-    4: "x6",
-    5: "x5",
-    6: "x3",
-    7: "3 → 1 rep",
-}
-
 JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
 
 # ------------------- FONCTIONS -------------------
@@ -37,11 +23,6 @@ def get_phase(current_date):
         if start <= current_date <= end:
             return phase, mardi, jeudi
     return "Hors phase", "Repos", "Repos"
-
-def get_regime(current_date, type_seance):
-    if type_seance in ["Muscu", "Gym/Muscu/Mobilité"]:
-        return REGIMES.get(current_date.month, "")
-    return ""
 
 # ------------------- INTERFACE -------------------
 
@@ -71,25 +52,30 @@ elif jour == "Jeudi":
 else:
     type_seance = "Muscu"
 
-regime = get_regime(selected_date, type_seance)
-
 # ------------------- FORMULAIRE -------------------
 
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
-if regime:
-    st.markdown(f"**Régime musculaire recommandé :** `{regime}`")
 
 with st.form("formulaire_seance"):
     exercices = st.text_area("Exercices réalisés")
     charge_reps = st.text_input("Charges / Répétitions")
     rpe = st.slider("RPE / Intensité ressentie", 1, 10, 7)
     fatigue = st.slider("Fatigue générale (1 reposé — 10 cramé)", 1, 10, 5)
+    
+    st.markdown("### 🩻 Douleur")
+    douleur_type = st.radio("Type de douleur", ["Aucune", "Musculaire", "Articulaire"], index=0)
+    douleur_zone = st.text_input("Zone de douleur (si applicable)", disabled=douleur_type == "Aucune")
+
+    st.markdown("### 🌙 Récupération")
+    sommeil = st.slider("Qualité du sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
+    hydratation = st.slider("Hydratation (0 = déshydraté, 10 = optimal)", 0, 10, 5)
+    nutrition = st.slider("Nutrition (0 = mauvaise, 10 = parfaite)", 0, 10, 5)
+
     notes = st.text_area("Remarques / sensations")
 
     submitted = st.form_submit_button("💾 Enregistrer la séance")
 
     if submitted:
-        # Stockage dans session (pour test local, on peut ensuite sauvegarder ailleurs)
         if "data" not in st.session_state:
             st.session_state.data = []
 
@@ -98,11 +84,15 @@ with st.form("formulaire_seance"):
             "Jour": jour,
             "Période": phase,
             "Séance": type_seance,
-            "Régime musculaire": regime,
             "Exercices": exercices,
             "Charge / reps": charge_reps,
             "RPE": rpe,
             "Fatigue": fatigue,
+            "Douleur": douleur_type,
+            "Zone douleur": douleur_zone,
+            "Sommeil": sommeil,
+            "Hydratation": hydratation,
+            "Nutrition": nutrition,
             "Notes": notes
         })
         st.success("Séance enregistrée !")
@@ -115,3 +105,4 @@ if "data" in st.session_state and st.session_state.data:
     st.dataframe(df)
 
     st.download_button("⬇️ Télécharger en Excel", data=df.to_excel(index=False), file_name="carnet_suivi.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
