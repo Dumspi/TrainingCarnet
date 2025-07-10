@@ -20,7 +20,7 @@ EXOS_MUSCU = [
     "Squat", "Squat avec ceinture", "Demi-squat", "Pull over avec mouvement du bassin",
     "Pull over avec haltère", "Développé couché strict", "Développé couché avec mouvement du bassin",
     "Renfo ischios", "Renfo adducteurs", "Tirage nuque", "Tirage rowing", "Abdos",
-    "Exos lombaires", "Renfo cheville", "Dips", "Vélo", "Rowing machine", "Lancer de médecine ball"
+    "Exos lombaires", "Renfo cheville", "Dips", "Vélo", "Rowing machine", "Lancer de medecine ball"
 ]
 
 EXOS_PREPA = ["Médecine ball", "Passage de haies", "Série de médecine ball JB", "Gainage"]
@@ -34,9 +34,8 @@ TESTS_MAX_JAVELOT = [
 TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
 
 ZONES_DOULEUR = [
-    "Épaule droite", "Épaule gauche", "Coude droit", "Coude gauche",
-    "Poignet droit", "Poignet gauche", "Dos haut", "Bas du dos",
-    "Hanche droite", "Hanche gauche", "Genou droit", "Genou gauche",
+    "Épaule droite", "Épaule gauche", "Coude droit", "Coude gauche", "Poignet droit", "Poignet gauche",
+    "Dos haut", "Bas du dos", "Hanche droite", "Hanche gauche", "Genou droit", "Genou gauche",
     "Cheville droite", "Cheville gauche", "Cuisses", "Ischio-jambiers", "Mollets"
 ]
 
@@ -66,25 +65,14 @@ if weekday > 4:
 jour = JOURS[weekday]
 phase, mardi_type, jeudi_type = get_phase(selected_date)
 
-if jour == "Lundi":
-    type_seance = "Muscu"
-elif jour == "Mardi":
-    type_seance = mardi_type
-elif jour == "Mercredi":
-    type_seance = "Gym/Muscu/Mobilité"
-elif jour == "Jeudi":
-    type_seance = jeudi_type
-else:
-    type_seance = "Muscu"
+type_seance = "Muscu" if jour in ["Lundi", "Mercredi", "Vendredi"] else (mardi_type if jour == "Mardi" else jeudi_type)
 
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
 
 # ---------- ONGLETS ----------
-
 tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", "🧪 Tests max"])
 
 # ---------- ONGLET SÉANCE ----------
-
 with tab_seance:
     with st.form("formulaire_seance"):
         st.markdown("### 🏋️ Exercices réalisés")
@@ -97,19 +85,18 @@ with tab_seance:
         def saisie_exercices(exercices):
             resultats = []
             for exo in exercices:
-                col1, col2 = st.columns([3, 1])
+                col1, col2, col3 = st.columns([3, 1, 1])
                 with col1:
-                    reps = st.text_input(f"{exo} – Répétitions :", key=f"reps_{exo}")
+                    st.markdown(f"**{exo}**")
                 with col2:
-                    restitution = st.checkbox("Restitution ?", key=f"restit_{exo}")
-                label = f"{exo} ({reps})" if reps else exo
-                if restitution:
-                    label += " ✅"
-                resultats.append(label)
+                    charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=2.5, key=f"charge_{exo}")
+                with col3:
+                    reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+                resultats.append(f"{exo} – {charge} kg x {reps} reps")
             return resultats
 
-        if jour == "Lundi":
-            selection = st.multiselect("Exos muscu", EXOS_MUSCU)
+        if jour in ["Lundi", "Mercredi", "Vendredi"]:
+            selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
             exercices_reps = saisie_exercices(selection)
 
         elif jour in ["Mardi", "Jeudi"]:
@@ -164,7 +151,6 @@ with tab_seance:
             st.success("Séance enregistrée avec succès ✅")
 
 # ---------- ONGLET DOULEUR ----------
-
 with tab_douleur:
     with st.form("formulaire_douleur"):
         st.markdown("### ⚠️ Douleur")
@@ -203,7 +189,6 @@ with tab_douleur:
             st.success("Douleur enregistrée ✅")
 
 # ---------- ONGLET TESTS ----------
-
 with tab_tests:
     st.markdown("### 🧪 Tests de performance")
     tests = {}
@@ -211,7 +196,7 @@ with tab_tests:
     def saisir_test(label):
         return st.number_input(f"{label} :", min_value=0.0, step=0.1, key=f"test_{label}")
 
-    if jour == "Lundi":
+    if jour in ["Lundi", "Mercredi", "Vendredi"]:
         tests_choisis = st.multiselect("Tests muscu", TESTS_MAX_MUSCU)
         for test in tests_choisis:
             tests[test] = saisir_test(test)
@@ -239,7 +224,6 @@ with tab_tests:
         st.success("Tests enregistrés ✅")
 
 # ---------- EXPORT ----------
-
 if "data" in st.session_state and st.session_state.data:
     df = pd.DataFrame(st.session_state.data)
     st.subheader("📊 Historique")
