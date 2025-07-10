@@ -64,7 +64,6 @@ if weekday > 4:
 
 jour = JOURS[weekday]
 phase, mardi_type, jeudi_type = get_phase(selected_date)
-
 type_seance = "Muscu" if jour in ["Lundi", "Mercredi", "Vendredi"] else (mardi_type if jour == "Mardi" else jeudi_type)
 
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
@@ -82,24 +81,28 @@ with tab_seance:
         prepa_comment = ""
         tech_comment = ""
 
-        # Fonction pour saisir charge, répétitions, séries pour chaque exo muscu
-        def saisie_exercices_muscu(exercices):
-            resultats = []
-            for exo in exercices:
+        if jour in ["Lundi", "Mercredi", "Vendredi"]:
+            selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
+
+            exos_details = {}
+            for exo in selection:
                 st.markdown(f"**{exo}**")
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    charge = st.number_input(f"Charge (kg) - {exo}", min_value=0.0, step=2.5, key=f"charge_{exo}")
+                    charge = st.number_input(f"Charge (kg) pour {exo}", min_value=0.0, step=0.5, key=f"charge_{exo}")
                 with col2:
-                    reps = st.number_input(f"Répétitions - {exo}", min_value=0, step=1, key=f"reps_{exo}")
+                    reps = st.number_input(f"Répétitions pour {exo}", min_value=0, step=1, key=f"reps_{exo}")
                 with col3:
-                    series = st.number_input(f"Séries - {exo}", min_value=0, step=1, key=f"series_{exo}")
-                resultats.append(f"{exo} – {charge} kg x {reps} reps x {series} séries")
-            return resultats
+                    series = st.number_input(f"Séries pour {exo}", min_value=0, step=1, key=f"series_{exo}")
+                exos_details[exo] = {
+                    "charge": charge,
+                    "repetitions": reps,
+                    "series": series
+                }
 
-        if jour in ["Lundi", "Mercredi", "Vendredi"]:
-            selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU, key="muscu_selection")
-            exercices_reps = saisie_exercices_muscu(selection)
+            # Préparer la liste texte avec toutes les infos
+            for exo, vals in exos_details.items():
+                exercices_reps.append(f"{exo} – {vals['charge']} kg x {vals['repetitions']} reps x {vals['series']} séries")
 
         elif jour in ["Mardi", "Jeudi"]:
             st.markdown("#### Préparation Physique")
@@ -212,14 +215,20 @@ with tab_tests:
         tests[TEST_SAUT_HAUTEUR] = saisir_test(TEST_SAUT_HAUTEUR)
 
     if st.button("💾 Enregistrer les tests"):
-        if "tests" not in st.session_state:
-            st.session_state.tests = []
-            
-enregistrement = {
-    "Date": selected_date.strftime("%Y-%m-%d"),
-    "Jour": jour,
-    "Phase": phase,
-    "Type": type_seance,
-    # autres champs...
-}
+        if "data" not in st.session_state:
+            st.session_state.data = []
 
+        st.session_state.data.append({
+            "Date": selected_date.strftime("%Y-%m-%d"),
+            "Jour": jour,
+            "Phase": phase,
+            "Type": type_seance,
+            "Tests": tests
+        })
+        st.success("Tests enregistrés ✅")
+
+# ---------- AFFICHAGE DONNÉES ----------
+if "data" in st.session_state and st.session_state.data:
+    st.markdown("## 📊 Données enregistrées")
+    df = pd.DataFrame(st.session_state.data)
+    st.dataframe(df)
