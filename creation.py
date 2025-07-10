@@ -29,14 +29,6 @@ TESTS_MAX_JAVELOT = [
 ]
 TEST_SAUT_HAUTEUR = "Saut en hauteur sans élan"
 
-# ------------------- FONCTIONS -------------------
-
-def get_phase(current_date):
-    for phase, start, end, mardi, jeudi in PHASES:
-        if start <= current_date <= end:
-            return phase, mardi, jeudi
-    return "Hors phase", "Repos", "Repos"
-
 # ------------------- INTERFACE -------------------
 
 st.title("📘 Carnet de suivi d'entraînement - Javelot")
