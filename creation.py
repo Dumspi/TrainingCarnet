@@ -76,17 +76,20 @@ tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", 
 
 # ---------- ONGLET SÉANCE ----------
 with tab_seance:
+    st.markdown("### 🏋️ Exercices réalisés")
+
+    exercices_reps = []
+    autres_exos = ""
+    prepa_comment = ""
+    tech_comment = ""
+
+    # 🔁 EN DEHORS DU FORMULAIRE pour que la sélection soit réactive
+    selection = []
+    if jour in ["Lundi", "Mercredi", "Vendredi"]:
+        selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
+
     with st.form("formulaire_seance"):
-        st.markdown("### 🏋️ Exercices réalisés")
-
-        exercices_reps = []
-        autres_exos = ""
-        prepa_comment = ""
-        tech_comment = ""
-
         if jour in ["Lundi", "Mercredi", "Vendredi"]:
-            selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
-
             exos_details = {}
             for exo in selection:
                 st.markdown(f"**{exo}**")
@@ -103,9 +106,32 @@ with tab_seance:
                     "series": series
                 }
 
-            # Préparer la liste texte avec toutes les infos
+            # ✅ Préparer les données à afficher et enregistrer
             for exo, vals in exos_details.items():
                 exercices_reps.append(f"{exo} – {vals['charge']} kg x {vals['repetitions']} reps x {vals['series']} séries")
+
+        elif jour in ["Mardi", "Jeudi"]:
+            st.markdown("#### Préparation Physique")
+            prepa_selection = st.multiselect("Exercices prépa physique :", EXOS_PREPA, key="prepa_exos")
+            prepa_comment = st.text_area("Commentaires prépa physique :", key="prepa_comment")
+
+            st.markdown("#### Technique")
+            tech_selection = st.multiselect("Exercices technique :", EXOS_TECH, key="tech_exos")
+            tech_comment = st.text_area("Commentaires technique :", key="tech_comment")
+
+            exercices_reps = prepa_selection + tech_selection
+
+        else:
+            autres_exos = st.text_area("Exercices réalisés (libre)")
+
+        # Autres infos générales
+        sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
+        hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
+        nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
+        rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
+        fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 =
+
+             
 
         elif jour in ["Mardi", "Jeudi"]:
             st.markdown("#### Préparation Physique")
