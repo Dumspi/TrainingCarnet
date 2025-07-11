@@ -77,7 +77,7 @@ tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", 
 # ---------- ONGLET SÉANCE ----------
 
 with tab_seance:
-                # 🔁 EN DEHORS DU FORMULAIRE pour garder sélection réactive
+    # 🔁 EN DEHORS DU FORMULAIRE pour garder sélection réactive
     selection = []
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
         selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
@@ -85,77 +85,77 @@ with tab_seance:
     with st.form("formulaire_seance"):
         exercices_reps = []
 
-    if jour in ["Lundi", "Mercredi", "Vendredi"]:
-        exos_details = {}
-        for exo in selection:
-            st.markdown(f"**{exo}**")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                charge = st.number_input(f"Charge (kg) pour {exo}", min_value=0.0, step=0.5, key=f"charge_{exo}")
-            with col2:
-                reps = st.number_input(f"Répétitions pour {exo}", min_value=0, step=1, key=f"reps_{exo}")
-            with col3:
-                series = st.number_input(f"Séries pour {exo}", min_value=0, step=1, key=f"series_{exo}")
-            exos_details[exo] = {
-                "charge": charge,
-                "repetitions": reps,
-                "series": series
-            }
+        if jour in ["Lundi", "Mercredi", "Vendredi"]:
+            exos_details = {}
+            for exo in selection:
+                st.markdown(f"**{exo}**")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    charge = st.number_input(f"Charge (kg) pour {exo}", min_value=0.0, step=0.5, key=f"charge_{exo}")
+                with col2:
+                    reps = st.number_input(f"Répétitions pour {exo}", min_value=0, step=1, key=f"reps_{exo}")
+                with col3:
+                    series = st.number_input(f"Séries pour {exo}", min_value=0, step=1, key=f"series_{exo}")
+                exos_details[exo] = {
+                    "charge": charge,
+                    "repetitions": reps,
+                    "series": series
+                }
 
-        for exo, vals in exos_details.items():
-            exercices_reps.append(f"{exo} – {vals['charge']} kg x {vals['repetitions']} reps x {vals['series']} séries")
+            for exo, vals in exos_details.items():
+                exercices_reps.append(f"{exo} – {vals['charge']} kg x {vals['repetitions']} reps x {vals['series']} séries")
 
-    elif jour in ["Mardi", "Jeudi"]:
-        st.markdown("#### Préparation Physique")
-        prepa_selection = st.multiselect("Exercices prépa physique :", EXOS_PREPA, key="prepa_exos")
-        prepa_comment = st.text_area("Commentaires prépa physique :", key="prepa_comment")
+        elif jour in ["Mardi", "Jeudi"]:
+            st.markdown("#### Préparation Physique")
+            prepa_selection = st.multiselect("Exercices prépa physique :", EXOS_PREPA, key="prepa_exos")
+            prepa_comment = st.text_area("Commentaires prépa physique :", key="prepa_comment")
 
-        st.markdown("#### Technique")
-        tech_selection = st.multiselect("Exercices technique :", EXOS_TECH, key="tech_exos")
-        tech_comment = st.text_area("Commentaires technique :", key="tech_comment")
+            st.markdown("#### Technique")
+            tech_selection = st.multiselect("Exercices technique :", EXOS_TECH, key="tech_exos")
+            tech_comment = st.text_area("Commentaires technique :", key="tech_comment")
 
-        exercices_reps = prepa_selection + tech_selection
+            exercices_reps = prepa_selection + tech_selection
 
-    else:
-        autres_exos = st.text_area("Exercices réalisés (libre)")
+        else:
+            autres_exos = st.text_area("Exercices réalisés (libre)")
 
-    # Autres infos générales
-    sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
-    hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
-    nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
-    rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
-    fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 = épuisé)", 1, 10, 5)
-    notes = st.text_area("Remarques complémentaires")
+        # Autres infos générales
+        sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
+        hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
+        nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
+        rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
+        fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 = épuisé)", 1, 10, 5)
+        notes = st.text_area("Remarques complémentaires")
 
-    submit = st.form_submit_button("💾 Enregistrer la séance")
+        submit = st.form_submit_button("💾 Enregistrer la séance")
 
-    if submit:
-        exos_final = "; ".join(exercices_reps) if exercices_reps else autres_exos
+        if submit:
+            exos_final = "; ".join(exercices_reps) if exercices_reps else autres_exos
 
-        if jour in ["Mardi", "Jeudi"]:
-            if prepa_comment:
-                exos_final += f"\nPrépa physique – Commentaires : {prepa_comment}"
-            if tech_comment:
-                exos_final += f"\nTechnique – Commentaires : {tech_comment}"
+            if jour in ["Mardi", "Jeudi"]:
+                if prepa_comment:
+                    exos_final += f"\nPrépa physique – Commentaires : {prepa_comment}"
+                if tech_comment:
+                    exos_final += f"\nTechnique – Commentaires : {tech_comment}"
 
-        if "data" not in st.session_state:
-            st.session_state.data = []
+            if "data" not in st.session_state:
+                st.session_state.data = []
 
-        st.session_state.data.append({
-            "Date": selected_date.strftime("%Y-%m-%d"),
-            "Jour": jour,
-            "Phase": phase,
-            "Type": type_seance,
-            "Exercices": exos_final,
-            "Sommeil": sommeil,
-            "Hydratation": hydratation,
-            "Nutrition": nutrition,
-            "RPE": rpe,
-            "Fatigue": fatigue,
-            "Notes": notes
-        })
+            st.session_state.data.append({
+                "Date": selected_date.strftime("%Y-%m-%d"),
+                "Jour": jour,
+                "Phase": phase,
+                "Type": type_seance,
+                "Exercices": exos_final,
+                "Sommeil": sommeil,
+                "Hydratation": hydratation,
+                "Nutrition": nutrition,
+                "RPE": rpe,
+                "Fatigue": fatigue,
+                "Notes": notes
+            })
 
-        st.success("Séance enregistrée avec succès ✅")
+            st.success("Séance enregistrée avec succès ✅")
 
 # ---------- ONGLET DOULEUR ----------
 with tab_douleur:
