@@ -76,6 +76,7 @@ tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", 
 
 # ---------- ONGLET SÉANCE ----------
 
+with tab_seance:
               # 🔁 EN DEHORS DU FORMULAIRE pour garder sélection réactive
 selection = []
 if jour in ["Lundi", "Mercredi", "Vendredi"]:
