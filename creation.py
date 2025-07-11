@@ -121,8 +121,8 @@ with tab_seance:
 
         # Autres infos générales
         sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
-        hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
-        nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
+        hydratation = st.slider("💧 Hydratation (0 = très mauvaise, 10= excellente)", 0, 10, 5)
+        nutrition = st.slider("🍎 Nutrition (0 = très mauvais, 10= excellente)", 0, 10, 5)
         rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
         fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 = épuisé)", 1, 10, 5)
         notes = st.text_area("Remarques complémentaires")
