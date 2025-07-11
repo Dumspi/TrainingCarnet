@@ -129,7 +129,7 @@ with tab_seance:
         hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
         nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
         rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
-        fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 =
+        fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 = épuisé)", 1, 10, 5)
 
              
 
