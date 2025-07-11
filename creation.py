@@ -77,13 +77,13 @@ tab_seance, tab_douleur, tab_tests = st.tabs(["📝 Séance", "⚠️ Douleur", 
 # ---------- ONGLET SÉANCE ----------
 
 with tab_seance:
-              # 🔁 EN DEHORS DU FORMULAIRE pour garder sélection réactive
-selection = []
-if jour in ["Lundi", "Mercredi", "Vendredi"]:
-    selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
+                # 🔁 EN DEHORS DU FORMULAIRE pour garder sélection réactive
+    selection = []
+    if jour in ["Lundi", "Mercredi", "Vendredi"]:
+        selection = st.multiselect("Exercices muscu réalisés :", EXOS_MUSCU)
 
-with st.form("formulaire_seance"):
-    exercices_reps = []
+    with st.form("formulaire_seance"):
+        exercices_reps = []
 
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
         exos_details = {}
