@@ -17,14 +17,17 @@ JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
 
 EXOS_MUSCU = [
     "Épaulé", "Épaulé avec bandes", "Arraché", "Arraché avec bandes", "Arraché force",
-    "Squat", "Squat avec ceinture", "Demi-squat", "Pull over avec mouvement du bassin",
+    "Squat", "Squat avec ceinture", "Demi-squat", "Demi-squat avec ceintures", "Pull over avec mouvement du bassin",
     "Pull over avec haltère", "Développé couché strict", "Développé couché avec mouvement du bassin",
     "Renfo ischios", "Renfo adducteurs", "Tirage nuque", "Tirage rowing", "Abdos",
-    "Exos lombaires", "Renfo cheville", "Dips", "Vélo", "Rowing machine", "Lancer de medecine ball"
+    "Exos lombaires", "Renfo cheville", "Dips", "Vélo", "Rowing machine", "Lancer de medecine ball", "poulie javelot"
 ]
 
-EXOS_PREPA = ["Médecine ball", "Passage de haies", "Série de médecine ball JB", "Gainage"]
-EXOS_TECH = ["Lancers de balles", "Courses d’élan", "Point technique précis", "Lancers de javelots"]
+EXOS_PREPA = ["Medecine ball", " Série passages de haies", "Série de medecine ball JB", "Gainage", "séries exos javelot avec barre olympique"]
+EXOS_TECH = ["Lancers de balles 400g", "Lancers de balles 500g", "Lancers de balles 600g", "Lancers de balles 700g", 
+             "Lancers de balles 800g" "Lancers de balles 900g", "Lancers de balles 1Kg", "Lancers de balles 1Kg200", 
+             "Lancers de balles 1Kg500, "Lancers de balles 2Kg "Courses d’élan", "Courses d'élan avec lattes", "Série de courses d'élan Yann", 
+             "Lancers de javelots"]
 
 TESTS_MAX_MUSCU = EXOS_MUSCU
 TESTS_MAX_JAVELOT = [
