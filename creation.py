@@ -124,29 +124,6 @@ with tab_seance:
         else:
             autres_exos = st.text_area("Exercices réalisés (libre)")
 
-        # Autres infos générales
-        sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
-        hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
-        nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
-        rpe = st.slider("🔥 Intensité ressentie (RPE)", 1, 10, 7)
-        fatigue = st.slider("😴 Fatigue générale (1 = reposé, 10 = épuisé)", 1, 10, 5)
-
-             
-
-        elif jour in ["Mardi", "Jeudi"]:
-            st.markdown("#### Préparation Physique")
-            prepa_selection = st.multiselect("Exercices prépa physique :", EXOS_PREPA, key="prepa_exos")
-            prepa_comment = st.text_area("Commentaires prépa physique :", key="prepa_comment")
-
-            st.markdown("#### Technique")
-            tech_selection = st.multiselect("Exercices technique :", EXOS_TECH, key="tech_exos")
-            tech_comment = st.text_area("Commentaires technique :", key="tech_comment")
-
-            exercices_reps = prepa_selection + tech_selection
-
-        else:
-            autres_exos = st.text_area("Exercices réalisés (libre)")
-
         sommeil = st.slider("🌙 Sommeil (0 = très mauvais, 10 = excellent)", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation (0 à 10)", 0, 10, 5)
         nutrition = st.slider("🍎 Nutrition (0 à 10)", 0, 10, 5)
