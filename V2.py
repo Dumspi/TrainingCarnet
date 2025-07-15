@@ -23,20 +23,13 @@ def load_sheet(sheet_id, sheet_name):
     return df, sheet
 
 def append_row_to_sheet(sheet, row):
+    if not sheet.get_all_values():
+        headers = ["Date", "Jour", "Phase", "Type", "Exercices", "Sommeil", "Hydratation", "Nutrition", "RPE", "Fatigue", "Notes", "Athlète"]
+        sheet.append_row(headers)
     sheet.append_row(row)
 
 # ---------- PARAMÈTRES ----------
-
-st.set_page_config(page_title="Carnet Javelot", layout="centered")
-st.title("📘 Carnet de suivi - Javelot")
-
 ATHLETES = ["Joffrey", "Marie", "Dorine", "Fabien", "Yann", "Lucile", "Arthur", "Baptiste"]
-
-# Sélection ATHLÈTE en tout premier
-athlete = st.selectbox("Sélectionne l'athlète :", ATHLETES)
-
-selected_date = st.date_input("📅 Choisis la date :", date.today())
-# ... le reste du code inchangé ...
 
 PHASES = [
     ("Prépa 1", date(2025, 9, 1), date(2025, 12, 31), "PPG/Technique", "PPG/Technique"),
@@ -66,19 +59,18 @@ ZONES_DOULEUR = [
     "Cheville droite", "Cheville gauche", "Cuisses", "Ischio-jambiers", "Mollets"
 ]
 
-# ---------- FONCTIONS ----------
 def get_phase(current_date):
     for phase, start, end, mardi, jeudi in PHASES:
         if start <= current_date <= end:
             return phase, mardi, jeudi
     return "", "PPG/Technique", "PPG/Technique"
 
-# ---------- APP ----------
+# ---------- INTERFACE ----------
 st.set_page_config(page_title="Carnet Javelot", layout="centered")
-st.title("📘 Carnet de suivi - Javelot")
+st.sidebar.title("👤 Sélection du profil")
+athlete = st.sidebar.selectbox("Sélectionne l'athlète :", ATHLETES, key="select_athlete")
 
-# Sélection athlète
-athlete = st.selectbox("Sélectionne l'athlète :", ATHLETES)
+st.title("📘 Carnet de suivi - Javelot")
 
 selected_date = st.date_input("📅 Choisis la date :", date.today())
 weekday = selected_date.weekday()
@@ -89,11 +81,11 @@ if weekday > 4:
 jour = JOURS[weekday]
 phase, mardi_type, jeudi_type = get_phase(selected_date)
 type_seance = "Muscu" if jour in ["Lundi", "Mercredi", "Vendredi"] else (mardi_type if jour == "Mardi" else jeudi_type)
-st.subheader(f"📍 {jour} — {phase} — {type_seance} — {athlete}")
-
-tab_seance, tab_douleur = st.tabs(["📝 Séance", "⚠️ Douleur"])
+st.subheader(f"📍 {jour} — {phase} — {type_seance}")
 
 # ---------- ONGLET SÉANCE ----------
+tab_seance, tab_douleur = st.tabs(["📝 Séance", "⚠️ Douleur"])
+
 with tab_seance:
     with st.form("form_seance"):
         exercices = []
@@ -138,12 +130,12 @@ with tab_seance:
                 exos_final += f"\nTechnique : {tech_comment}"
 
             new_row = [
-                selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, athlete, exos_final,
-                sommeil, hydratation, nutrition, rpe, fatigue, notes
+                selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
+                sommeil, hydratation, nutrition, rpe, fatigue, notes, athlete
             ]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
-            st.success(f"Séance enregistrée pour {athlete} ✅")
+            st.success("Séance enregistrée ✅")
             df, _ = load_sheet(SHEET_ID, SHEET_NAME)
             st.dataframe(df)
 
@@ -165,11 +157,12 @@ with tab_douleur:
             if autre.strip():
                 zone_str += (", " if zone_str else "") + autre.strip()
             new_row = [
-                selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", athlete, f"{type_douleur} : {zone_str}", "", "", "", "", "", commentaire
+                selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}",
+                "", "", "", "", "", commentaire, athlete
             ]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
-            st.success(f"Douleur enregistrée pour {athlete} ✅")
+            st.success("Douleur enregistrée ✅")
             df, _ = load_sheet(SHEET_ID, SHEET_NAME)
             st.dataframe(df)
 
