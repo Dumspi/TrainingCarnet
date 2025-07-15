@@ -123,21 +123,22 @@ with tab_seance:
         submit = st.form_submit_button("✅ Enregistrer")
 
         if submit:
-            exos_final = "; ".join(exercices) if exercices else autres_exos
-            if prepa_comment:
-                exos_final += f"\nPrépa : {prepa_comment}"
-            if tech_comment:
-                exos_final += f"\nTechnique : {tech_comment}"
-           new_row = [
-    athlete,  # 👈 ajouté en premier
-    selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
-    sommeil, hydratation, nutrition, rpe, fatigue, notes
-]
-            df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
-            append_row_to_sheet(sheet, new_row)
-            st.success("Séance enregistrée ✅")
-            df, _ = load_sheet(SHEET_ID, SHEET_NAME)
-            st.dataframe(df)
+    exos_final = "; ".join(exercices) if exercices else autres_exos
+    if prepa_comment:
+        exos_final += f"\nPrépa : {prepa_comment}"
+    if tech_comment:
+        exos_final += f"\nTechnique : {tech_comment}"
+
+    new_row = [
+        athlete,  # 👈 ajouté en premier
+        selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
+        sommeil, hydratation, nutrition, rpe, fatigue, notes
+    ]
+    df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
+    append_row_to_sheet(sheet, new_row)
+    st.success("Séance enregistrée ✅")
+    df, _ = load_sheet(SHEET_ID, SHEET_NAME)
+    st.dataframe(df)
 
 # ---------- ONGLET DOULEUR ----------
 with tab_douleur:
