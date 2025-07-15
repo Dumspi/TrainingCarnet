@@ -3,6 +3,9 @@ import pandas as pd
 from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
+import os
+st.write("📂 Dossier de travail actuel :", os.getcwd())
+st.write("📄 Fichiers dans le dossier :", os.listdir("."))
 
 # ---------- CONFIG GOOGLE SHEETS ----------
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
