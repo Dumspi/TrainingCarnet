@@ -30,6 +30,8 @@ def append_row_to_sheet(sheet, row):
 st.set_page_config(page_title="Carnet Javelot", layout="centered")
 st.title("📘 Carnet de suivi - Javelot")
 
+ATHLETES = ["Joffrey", "Marie", "Dorine", "Fabien", "Yann", "Lucile", "Arthur", "Baptiste"]
+
 # Sélection ATHLÈTE en tout premier
 athlete = st.selectbox("Sélectionne l'athlète :", ATHLETES)
 
@@ -63,8 +65,6 @@ ZONES_DOULEUR = [
     "Dos haut", "Bas du dos", "Hanche droite", "Hanche gauche", "Genou droit", "Genou gauche",
     "Cheville droite", "Cheville gauche", "Cuisses", "Ischio-jambiers", "Mollets"
 ]
-
-ATHLETES = ["Joffrey", "Marie", "Dorine", "Fabien", "Yann", "Lucile", "Arthur", "Baptiste"]
 
 # ---------- FONCTIONS ----------
 def get_phase(current_date):
