@@ -26,6 +26,16 @@ def append_row_to_sheet(sheet, row):
     sheet.append_row(row)
 
 # ---------- PARAMÈTRES ----------
+
+st.set_page_config(page_title="Carnet Javelot", layout="centered")
+st.title("📘 Carnet de suivi - Javelot")
+
+# Sélection ATHLÈTE en tout premier
+athlete = st.selectbox("Sélectionne l'athlète :", ATHLETES)
+
+selected_date = st.date_input("📅 Choisis la date :", date.today())
+# ... le reste du code inchangé ...
+
 PHASES = [
     ("Prépa 1", date(2025, 9, 1), date(2025, 12, 31), "PPG/Technique", "PPG/Technique"),
     ("Pré-compétition janvier", date(2026, 1, 1), date(2026, 1, 31), "PPG/Technique", "Technique"),
