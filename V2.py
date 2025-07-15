@@ -121,8 +121,7 @@ with tab_seance:
         notes = st.text_area("🗒️ Notes")
 
         submit = st.form_submit_button("✅ Enregistrer")
-
-        if submit:
+if submit:
     exos_final = "; ".join(exercices) if exercices else autres_exos
     if prepa_comment:
         exos_final += f"\nPrépa : {prepa_comment}"
