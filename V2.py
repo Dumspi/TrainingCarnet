@@ -92,6 +92,12 @@ with tab_seance:
         autres_exos = ""
         prepa_comment = ""
         tech_comment = ""
+        
+     # BOUTON DE VALIDATION À L’INTÉRIEUR
+    submit = st.form_submit_button("✅ Enregistrer")
+
+    if submit:
+        st.success("Données enregistrées ✅")
 
         if jour in ["Lundi", "Mercredi", "Vendredi"]:
             selection = st.multiselect("Exercices muscu :", EXOS_MUSCU)
