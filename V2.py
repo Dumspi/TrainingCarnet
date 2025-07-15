@@ -92,12 +92,6 @@ with tab_seance:
         autres_exos = ""
         prepa_comment = ""
         tech_comment = ""
-        
-     # BOUTON DE VALIDATION À L’INTÉRIEUR
-    submit = st.form_submit_button("✅ Enregistrer")
-
-    if submit:
-        st.success("Données enregistrées ✅")
 
         if jour in ["Lundi", "Mercredi", "Vendredi"]:
             selection = st.multiselect("Exercices muscu :", EXOS_MUSCU)
@@ -126,7 +120,7 @@ with tab_seance:
         fatigue = st.slider("😴 Fatigue", 1, 10, 5)
         notes = st.text_area("🗒️ Notes")
 
-        submit = st.form_submit_button("✅ Enregistrer")
+        submit = st.form_submit_button("✅ Enregistrer")  # 👉 DOIT être à la fin du bloc form
 
         if submit:
             exos_final = "; ".join(exercices) if exercices else autres_exos
