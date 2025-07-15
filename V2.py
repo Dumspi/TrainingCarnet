@@ -3,9 +3,6 @@ import pandas as pd
 from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
-import os
-st.write("📂 Dossier de travail actuel :", os.getcwd())
-st.write("📄 Fichiers dans le dossier :", os.listdir("."))
 
 # ---------- CONFIG GOOGLE SHEETS ----------
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -14,7 +11,15 @@ SHEET_NAME = 'Feuille 1'
 
 @st.cache_resource
 def get_gsheet_client():
-    creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+    import json
+
+try:
+    with open("credentials.json", "r", encoding="utf-8") as f:
+        creds_data = json.load(f)
+    creds = Credentials.from_service_account_info(creds_data, scopes=SCOPES)
+except Exception as e:
+    st.error(f"⛔ Erreur lors du chargement de credentials.json : {e}")
+    st.stop()
     client = gspread.authorize(creds)
     return client
 
