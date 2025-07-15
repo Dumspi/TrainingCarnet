@@ -141,7 +141,7 @@ with tab_seance:
     st.dataframe(df)
 
 # ---------- ONGLET DOULEUR ----------
-th tab_douleur:
+with tab_douleur:
     with st.form("form_douleur"):
         type_douleur = st.selectbox("Type de douleur", ["Aucune", "Musculaire", "Articulaire", "Tendineuse"])
         zones = []
@@ -157,8 +157,8 @@ th tab_douleur:
             zone_str = ", ".join(zones)
             if autre.strip():
                 zone_str += (", " if zone_str else "") + autre.strip()
-                
-           new_row = [
+    
+            new_row = [
                 athlete,
                 selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}",
                 "", "", "", "", "", commentaire
