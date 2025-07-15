@@ -120,8 +120,9 @@ with tab_seance:
         fatigue = st.slider("😴 Fatigue", 1, 10, 5)
         notes = st.text_area("🗒️ Notes")
 
-        submit = st.form_submit_button("✅ Enregistrer")
-if submit:
+ submit = st.form_submit_button("✅ Enregistrer")
+
+ if submit:
     exos_final = "; ".join(exercices) if exercices else autres_exos
     if prepa_comment:
         exos_final += f"\nPrépa : {prepa_comment}"
@@ -140,7 +141,7 @@ if submit:
     st.dataframe(df)
 
 # ---------- ONGLET DOULEUR ----------
-with tab_douleur:
+th tab_douleur:
     with st.form("form_douleur"):
         type_douleur = st.selectbox("Type de douleur", ["Aucune", "Musculaire", "Articulaire", "Tendineuse"])
         zones = []
@@ -156,11 +157,12 @@ with tab_douleur:
             zone_str = ", ".join(zones)
             if autre.strip():
                 zone_str += (", " if zone_str else "") + autre.strip()
+                
            new_row = [
-    athlete,
-    selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}",
-    "", "", "", "", "", commentaire
-]
+                athlete,
+                selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}",
+                "", "", "", "", "", commentaire
+            ]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
             st.success("Douleur enregistrée ✅")
