@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
+import json
 
 # ---------- CONFIG GOOGLE SHEETS ----------
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -11,7 +12,6 @@ SHEET_NAME = 'Feuille 1'
 
 @st.cache_resource
 def get_gsheet_client():
-    import json
     try:
         with open("credentials.json", "r", encoding="utf-8") as f:
             creds_data = json.load(f)
@@ -136,12 +136,12 @@ with tab_seance:
             if tech_comment:
                 exos_final += f"\nTechnique : {tech_comment}"
 
+            df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             new_row = [
                 athlete,
                 selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
                 sommeil, hydratation, nutrition, rpe, fatigue, notes
             ]
-            df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
             st.success("Séance enregistrée ✅")
             df, _ = load_sheet(SHEET_ID, SHEET_NAME)
