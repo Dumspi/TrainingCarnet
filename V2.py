@@ -129,10 +129,11 @@ with tab_seance:
             if tech_comment:
                 exos_final += f"\nTechnique : {tech_comment}"
 
-            new_row = [
-                selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
-                sommeil, hydratation, nutrition, rpe, fatigue, notes, athlete
-            ]
+           new_row = [
+    athlete,  # 👈 ajouté en premier
+    selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
+    sommeil, hydratation, nutrition, rpe, fatigue, notes
+]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
             st.success("Séance enregistrée ✅")
@@ -156,10 +157,11 @@ with tab_douleur:
             zone_str = ", ".join(zones)
             if autre.strip():
                 zone_str += (", " if zone_str else "") + autre.strip()
-            new_row = [
-                selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}",
-                "", "", "", "", "", commentaire, athlete
-            ]
+           new_row = [
+    athlete,
+    selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}",
+    "", "", "", "", "", commentaire
+]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
             st.success("Douleur enregistrée ✅")
