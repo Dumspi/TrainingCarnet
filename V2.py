@@ -128,7 +128,6 @@ with tab_seance:
                 exos_final += f"\nPrépa : {prepa_comment}"
             if tech_comment:
                 exos_final += f"\nTechnique : {tech_comment}"
-
            new_row = [
     athlete,  # 👈 ajouté en premier
     selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
