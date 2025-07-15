@@ -54,6 +54,8 @@ ZONES_DOULEUR = [
     "Cheville droite", "Cheville gauche", "Cuisses", "Ischio-jambiers", "Mollets"
 ]
 
+ATHLETES = ["Joffrey", "Marie", "Dorine", "Fabien", "Yann", "Lucile", "Arthur", "Baptiste"]
+
 # ---------- FONCTIONS ----------
 def get_phase(current_date):
     for phase, start, end, mardi, jeudi in PHASES:
@@ -65,6 +67,9 @@ def get_phase(current_date):
 st.set_page_config(page_title="Carnet Javelot", layout="centered")
 st.title("📘 Carnet de suivi - Javelot")
 
+# Sélection athlète
+athlete = st.selectbox("Sélectionne l'athlète :", ATHLETES)
+
 selected_date = st.date_input("📅 Choisis la date :", date.today())
 weekday = selected_date.weekday()
 if weekday > 4:
@@ -74,7 +79,7 @@ if weekday > 4:
 jour = JOURS[weekday]
 phase, mardi_type, jeudi_type = get_phase(selected_date)
 type_seance = "Muscu" if jour in ["Lundi", "Mercredi", "Vendredi"] else (mardi_type if jour == "Mardi" else jeudi_type)
-st.subheader(f"📍 {jour} — {phase} — {type_seance}")
+st.subheader(f"📍 {jour} — {phase} — {type_seance} — {athlete}")
 
 tab_seance, tab_douleur = st.tabs(["📝 Séance", "⚠️ Douleur"])
 
@@ -123,12 +128,12 @@ with tab_seance:
                 exos_final += f"\nTechnique : {tech_comment}"
 
             new_row = [
-                selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
+                selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, athlete, exos_final,
                 sommeil, hydratation, nutrition, rpe, fatigue, notes
             ]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
-            st.success("Séance enregistrée ✅")
+            st.success(f"Séance enregistrée pour {athlete} ✅")
             df, _ = load_sheet(SHEET_ID, SHEET_NAME)
             st.dataframe(df)
 
@@ -150,11 +155,11 @@ with tab_douleur:
             if autre.strip():
                 zone_str += (", " if zone_str else "") + autre.strip()
             new_row = [
-                selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", f"{type_douleur} : {zone_str}", "", "", "", "", "", commentaire
+                selected_date.strftime("%Y-%m-%d"), jour, phase, "Douleur", athlete, f"{type_douleur} : {zone_str}", "", "", "", "", "", commentaire
             ]
             df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
-            st.success("Douleur enregistrée ✅")
+            st.success(f"Douleur enregistrée pour {athlete} ✅")
             df, _ = load_sheet(SHEET_ID, SHEET_NAME)
             st.dataframe(df)
 
