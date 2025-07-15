@@ -12,16 +12,15 @@ SHEET_NAME = 'Feuille 1'
 @st.cache_resource
 def get_gsheet_client():
     import json
-
-try:
-    with open("credentials.json", "r", encoding="utf-8") as f:
-        creds_data = json.load(f)
-    creds = Credentials.from_service_account_info(creds_data, scopes=SCOPES)
-except Exception as e:
-    st.error(f"⛔ Erreur lors du chargement de credentials.json : {e}")
-    st.stop()
-    client = gspread.authorize(creds)
-    return client
+    try:
+        with open("credentials.json", "r", encoding="utf-8") as f:
+            creds_data = json.load(f)
+        creds = Credentials.from_service_account_info(creds_data, scopes=SCOPES)
+        client = gspread.authorize(creds)
+        return client
+    except Exception as e:
+        st.error(f"⛔ Erreur lors du chargement de credentials.json : {e}")
+        st.stop()
 
 def load_sheet(sheet_id, sheet_name):
     client = get_gsheet_client()
@@ -128,7 +127,7 @@ with tab_seance:
         fatigue = st.slider("😴 Fatigue", 1, 10, 5)
         notes = st.text_area("🗒️ Notes")
 
-        submit = st.form_submit_button("✅ Enregistrer")  # 👉 DOIT être à la fin du bloc form
+        submit = st.form_submit_button("✅ Enregistrer")
 
         if submit:
             exos_final = "; ".join(exercices) if exercices else autres_exos
