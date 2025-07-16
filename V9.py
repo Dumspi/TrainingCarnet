@@ -91,8 +91,8 @@ with st.form("form_seance"):
     tech_comment = ""
 
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
-    if "selected_exos" not in st.session_state:
-        st.session_state.selected_exos = []
+        if "selected_exos" not in st.session_state:
+            st.session_state.selected_exos = []
 
     selected_exos = st.multiselect(
         "Exercices muscu :", EXOS_MUSCU,
