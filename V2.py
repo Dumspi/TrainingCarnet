@@ -91,8 +91,11 @@ with st.form("form_seance"):
     tech_comment = ""
 
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
-        selection = st.multiselect("Exercices muscu :", EXOS_MUSCU)
-        for exo in selection:
+        selection = st.multiselect("Exercices muscu :", EXOS_MUSCU, key="muscu_selection")
+
+if selection:
+    for exo in selection:
+        with st.expander(f"Détails pour {exo}"):
             col1, col2, col3 = st.columns(3)
             with col1:
                 charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
@@ -101,6 +104,7 @@ with st.form("form_seance"):
             with col3:
                 series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
             exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
+            
     elif jour in ["Mardi", "Jeudi"]:
         prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
         prepa_comment = st.text_area("Commentaire prépa")
