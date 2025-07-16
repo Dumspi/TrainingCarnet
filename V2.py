@@ -113,14 +113,14 @@ elif jour in ["Mardi", "Jeudi"]:
 else:
         autres_exos = st.text_area("Autres exercices")
 
-    sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
-    hydratation = st.slider("💧 Hydratation", 0, 10, 5)
-    nutrition = st.slider("🍎 Nutrition", 0, 10, 5)
-    rpe = st.slider("🔥 RPE", 1, 10, 7)
-    fatigue = st.slider("😴 Fatigue", 1, 10, 5)
-    notes = st.text_area("🗒️ Notes")
+        sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
+        hydratation = st.slider("💧 Hydratation", 0, 10, 5)
+        nutrition = st.slider("🍎 Nutrition", 0, 10, 5)
+        rpe = st.slider("🔥 RPE", 1, 10, 7)
+        fatigue = st.slider("😴 Fatigue", 1, 10, 5)
+        notes = st.text_area("🗒️ Notes")
 
-    submit = st.form_submit_button("✅ Enregistrer")
+        submit = st.form_submit_button("✅ Enregistrer")
 
     if submit:
         exos_final = "; ".join(exercices) if exercices else autres_exos
