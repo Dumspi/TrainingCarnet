@@ -104,8 +104,7 @@ if selection:
             with col3:
                 series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
             exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
-            
-    elif jour in ["Mardi", "Jeudi"]:
+elif jour in ["Mardi", "Jeudi"]:
         prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
         prepa_comment = st.text_area("Commentaire prépa")
         tech = st.multiselect("Technique :", EXOS_TECH)
