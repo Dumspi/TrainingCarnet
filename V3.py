@@ -91,16 +91,26 @@ with st.form("form_seance"):
     tech_comment = ""
 
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
-        selection = st.multiselect("Exercices muscu :", EXOS_MUSCU, key="muscu_selection")
-        for exo in selection:
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
-            with col2:
-                reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-            with col3:
-                series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
-            exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
+    if "selected_exos" not in st.session_state:
+        st.session_state.selected_exos = []
+
+    selected_exos = st.multiselect(
+        "Exercices muscu :", EXOS_MUSCU,
+        default=st.session_state.selected_exos,
+        key="muscu_selection"
+    )
+
+    st.session_state.selected_exos = selected_exos  # sauvegarde dans session
+
+    for exo in selected_exos:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
+        with col2:
+            reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+        with col3:
+            series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
+        exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
     elif jour in ["Mardi", "Jeudi"]:
         prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
