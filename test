@@ -1,0 +1,25 @@
+import streamlit as st
+import gspread
+from google.oauth2.service_account import Credentials
+import json
+
+@st.cache_resource
+def get_gsheet_client():
+    try:
+        with open("credentials.json", "r", encoding="utf-8") as f:
+            creds_data = json.load(f)
+        creds = Credentials.from_service_account_info(creds_data, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+        client = gspread.authorize(creds)
+        return client
+    except Exception as e:
+        st.error(f"Erreur : {e}")
+        st.stop()
+
+st.write("✅ Le script a démarré correctement")
+Puis, dans le terminal :
+
+bash
+Copier
+Modifier
+cd ~/Desktop/Dumspi
+streamlit run test.py
