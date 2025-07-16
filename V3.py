@@ -31,7 +31,7 @@ def load_sheet(sheet_id, sheet_name):
 
 def append_row_to_sheet(sheet, row):
     if not sheet.get_all_values():
-        headers = ["Athlète", "Date", "Jour", "Type", "Exercices", "Sommeil", "Hydratation", "Nutrition", "RPE", "Fatigue", "Notes"]
+        headers = ["Athlète", "Date", "Jour", "Phase", "Type", "Exercices", "Sommeil", "Hydratation", "Nutrition", "RPE", "Fatigue", "Notes"]
         sheet.append_row(headers)
     sheet.append_row(row)
 
@@ -91,18 +91,19 @@ with st.form("form_seance"):
     tech_comment = ""
 
     if jour in ["Lundi", "Mercredi", "Vendredi"]:
+    selection = st.multiselect("Exercices muscu :", EXOS_MUSCU)
+    if selection:
+        for exo in selection:
+            st.markdown(f"### {exo}")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
+            with col2:
+                reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+            with col3:
+                series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
+            exercices.append(f"{exo} – {charge}kg x {reps} x {series}")if jour in ["Lundi", "Mercredi", "Vendredi"]:
         selection = st.multiselect("Exercices muscu :", EXOS_MUSCU)
-        if selection:
-            for exo in selection:
-                with st.expander(f"Détails pour {exo}"):
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
-                    with col2:
-                        reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-                    with col3:
-                        series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
-                    exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
     elif jour in ["Mardi", "Jeudi"]:
         prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
