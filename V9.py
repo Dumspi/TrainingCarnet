@@ -100,7 +100,7 @@ with st.form("form_seance"):
         key="muscu_selection"
     )
 
-    st.session_state.selected_exos = selected_exos  # sauvegarde dans session
+    st.session_state.selected_exos = selected_exos
 
     for exo in selected_exos:
         col1, col2, col3 = st.columns(3)
