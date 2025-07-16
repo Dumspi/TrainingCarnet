@@ -110,7 +110,7 @@ elif jour in ["Mardi", "Jeudi"]:
         tech = st.multiselect("Technique :", EXOS_TECH)
         tech_comment = st.text_area("Commentaire technique")
         exercices = prepa + tech
-    else:
+else:
         autres_exos = st.text_area("Autres exercices")
 
     sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
