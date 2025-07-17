@@ -31,21 +31,12 @@ def load_sheet(sheet_id, sheet_name):
 
 def append_row_to_sheet(sheet, row):
     if not sheet.get_all_values():
-        headers = ["Athlète", "Date", "Jour", "Phase", "Type", "Exercices", "Sommeil", "Hydratation", "Nutrition", "RPE", "Fatigue", "Notes"]
+        headers = ["Athlète", "Date", "Jour", "Type", "Exercices", "Sommeil", "Hydratation", "Nutrition", "RPE", "Fatigue", "Notes"]
         sheet.append_row(headers)
     sheet.append_row(row)
 
 # ---------- PARAMÈTRES ----------
 ATHLETES = ["Joffrey", "Marie", "Dorine", "Fabien", "Yann", "Lucile", "Arthur", "Baptiste"]
-
-PHASES = [
-    ("Prépa 1", date(2025, 9, 1), date(2025, 12, 31), "PPG/Technique", "PPG/Technique"),
-    ("Pré-compétition janvier", date(2026, 1, 1), date(2026, 1, 31), "PPG/Technique", "Technique"),
-    ("Compétition février", date(2026, 2, 1), date(2026, 2, 28), "Technique", "Technique"),
-    ("Prépa 2", date(2026, 3, 1), date(2026, 4, 15), "PPG/Technique", "PPG/Technique"),
-    ("Pré-compétition avril-mai", date(2026, 4, 16), date(2026, 5, 15), "PPG/Technique", "Technique"),
-    ("Compétition mai-juillet", date(2026, 5, 16), date(2026, 7, 15), "Technique", "Technique"),
-]
 
 JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
@@ -71,9 +62,8 @@ selected_date = st.date_input("📅 Choisis la date :", date.today())
 weekday = selected_date.weekday()
 
 jour = JOURS[weekday]
-phase, mardi_type, jeudi_type = get_phase(selected_date)
 type_seance = "Muscu" if jour in ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] else "autre"
-st.subheader(f"📍 {jour} — {phase} — {type_seance}")
+st.subheader(f"📍 {jour} — {type_seance}")
 
 with st.form("form_seance"):
     exercices = []
@@ -124,7 +114,7 @@ with st.form("form_seance"):
 
         new_row = [
             athlete,
-            selected_date.strftime("%Y-%m-%d"), jour, phase, type_seance, exos_final,
+            selected_date.strftime("%Y-%m-%d"), jour, type_seance, exos_final,
             sommeil, hydratation, nutrition, rpe, fatigue, notes
         ]
         df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
