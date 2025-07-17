@@ -81,27 +81,19 @@ with st.form("form_seance"):
     prepa_comment = ""
     tech_comment = ""
 
-    if jour in ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] else "autre"
-        if "selected_exos" not in st.session_state:
-            st.session_state.selected_exos = []
+    # plus de condition :
+selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
 
-            selected_exos = st.multiselect(
-                "Exercices muscu :", EXOS_MUSCU,
-                default=st.session_state.selected_exos,
-                key="muscu_selection"
-            )
+for exo in selected_exos:
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
+    with col2:
+        reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+    with col3:
+        series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
+    exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
-            st.session_state.selected_exos = selected_exos
-
-            for exo in selected_exos:
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
-                with col2:
-                    reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-                with col3:
-                    series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
-                exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
         prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
         prepa_comment = st.text_area("Commentaire prépa")
