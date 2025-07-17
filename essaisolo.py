@@ -72,7 +72,7 @@ weekday = selected_date.weekday()
 
 jour = JOURS[weekday]
 phase, mardi_type, jeudi_type = get_phase(selected_date)
-type_seance = "Muscu" if jour in ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi" "Samedi", "Dimanche"]
+type_seance = "Muscu" if jour in ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] else "autre"
 st.subheader(f"📍 {jour} — {phase} — {type_seance}")
 
 with st.form("form_seance"):
