@@ -47,7 +47,7 @@ PHASES = [
     ("Compétition mai-juillet", date(2026, 5, 16), date(2026, 7, 15), "Technique", "Technique"),
 ]
 
-JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
+JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
 EXOS_MUSCU = [
     "Épaulé", "Épaulé avec bandes", "Arraché", "Arraché avec bandes", "Arraché force",
@@ -81,7 +81,7 @@ with st.form("form_seance"):
     prepa_comment = ""
     tech_comment = ""
 
-    if jour in ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi" "Samedi", "Dimanche"]
+    if jour in ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"] else "autre"
         if "selected_exos" not in st.session_state:
             st.session_state.selected_exos = []
 
