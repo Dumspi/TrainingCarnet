@@ -81,34 +81,39 @@ with st.form("form_seance"):
     prepa_comment = ""
     tech_comment = ""
 
-    # plus de condition :
-selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
+    # Sélection muscu
+    selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
 
-for exo in selected_exos:
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
-    with col2:
-        reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-    with col3:
-        series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
-    exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
+    for exo in selected_exos:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
+        with col2:
+            reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+        with col3:
+            series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
+        exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
+    # Prépa physique
+    prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
+    prepa_comment = st.text_area("Commentaire prépa")
+    exercices += prepa
 
-prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
-prepa_comment = st.text_area("Commentaire prépa")
-tech = st.multiselect("Technique :", EXOS_TECH)
-tech_comment = st.text_area("Commentaire technique")
-exercices = prepa + tech
+    # Technique
+    tech = st.multiselect("Technique :", EXOS_TECH)
+    tech_comment = st.text_area("Commentaire technique")
+    exercices += tech
 
-sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
-hydratation = st.slider("💧 Hydratation", 0, 10, 5)
-nutrition = st.slider("🍎 Nutrition", 0, 10, 5)
-rpe = st.slider("🔥 RPE", 1, 10, 7)
-fatigue = st.slider("😴 Fatigue", 1, 10, 5)
-notes = st.text_area("🗒️ Notes")
+    # Données complémentaires
+    sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
+    hydratation = st.slider("💧 Hydratation", 0, 10, 5)
+    nutrition = st.slider("🍎 Nutrition", 0, 10, 5)
+    rpe = st.slider("🔥 RPE", 1, 10, 7)
+    fatigue = st.slider("😴 Fatigue", 1, 10, 5)
+    notes = st.text_area("🗒️ Notes")
 
-submit = st.form_submit_button("✅ Enregistrer")
+    # Bouton d'enregistrement
+    submit = st.form_submit_button("✅ Enregistrer")
 
     if submit:
         exos_final = "; ".join(exercices) if exercices else autres_exos
