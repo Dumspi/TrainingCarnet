@@ -95,20 +95,20 @@ for exo in selected_exos:
     exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
 
-        prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
-        prepa_comment = st.text_area("Commentaire prépa")
-        tech = st.multiselect("Technique :", EXOS_TECH)
-        tech_comment = st.text_area("Commentaire technique")
-        exercices = prepa + tech
+prepa = st.multiselect("Prépa physique :", EXOS_PREPA)
+prepa_comment = st.text_area("Commentaire prépa")
+tech = st.multiselect("Technique :", EXOS_TECH)
+tech_comment = st.text_area("Commentaire technique")
+exercices = prepa + tech
 
-    sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
-    hydratation = st.slider("💧 Hydratation", 0, 10, 5)
-    nutrition = st.slider("🍎 Nutrition", 0, 10, 5)
-    rpe = st.slider("🔥 RPE", 1, 10, 7)
-    fatigue = st.slider("😴 Fatigue", 1, 10, 5)
-    notes = st.text_area("🗒️ Notes")
+sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
+hydratation = st.slider("💧 Hydratation", 0, 10, 5)
+nutrition = st.slider("🍎 Nutrition", 0, 10, 5)
+rpe = st.slider("🔥 RPE", 1, 10, 7)
+fatigue = st.slider("😴 Fatigue", 1, 10, 5)
+notes = st.text_area("🗒️ Notes")
 
-    submit = st.form_submit_button("✅ Enregistrer")
+submit = st.form_submit_button("✅ Enregistrer")
 
     if submit:
         exos_final = "; ".join(exercices) if exercices else autres_exos
