@@ -61,35 +61,35 @@ jour = JOURS[weekday]
 tab_seance, tab_sensations, tab_maxs = st.tabs(["🖍️ Muscu", "🛌 Sensations", "🔺 Maxs"])
 
 with tab_seance:
-    with st.form("form_muscu"):
-        exercices = []
-        selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
+    st.subheader("💪 Séance de muscu")
+    exercices = []
+    selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
 
-        for exo in selected_exos:
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
-            with col2:
-                reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-            with col3:
-                series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
-            exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
+    for exo in selected_exos:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
+        with col2:
+            reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+        with col3:
+            series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
+        exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
-        submit = st.form_submit_button("✅ Enregistrer")
-        if submit:
-            new_row = [
-                athlete,
-                selected_date.strftime("%Y-%m-%d"),
-                jour,
-                "Muscu",
-                "; ".join(exercices),
-                "", "", "", "", "", ""
-            ]
-            df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
-            append_row_to_sheet(sheet, new_row)
-            st.success("Séance enregistrée ✅")
+    if st.button("✅ Enregistrer la séance"):
+        new_row = [
+            athlete,
+            selected_date.strftime("%Y-%m-%d"),
+            jour,
+            "Muscu",
+            "; ".join(exercices),
+            "", "", "", "", "", ""
+        ]
+        df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
+        append_row_to_sheet(sheet, new_row)
+        st.success("Séance enregistrée ✅")
 
 with tab_sensations:
+    st.subheader("🧘 Suivi des sensations")
     with st.form("form_sensations"):
         sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation", 0, 10, 5)
@@ -113,4 +113,5 @@ with tab_sensations:
             st.success("Sensations enregistrées ✅")
 
 with tab_maxs:
-    st.info("🔺 Tu pourras prochainement enregistrer tes records ici.")
+    st.subheader("🔺 Enregistrement des maxs")
+    st.markdown("**À venir** : Ajout des tests mensuels de performance (exos muscu, explosivité, etc.)")
