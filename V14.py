@@ -8,8 +8,7 @@ import json
 # ---------- CONFIG GOOGLE SHEETS ----------
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SHEET_ID = '1JrfYOXXajQFjl_wMqHpM4qJfBkgZiUO2VtTiPuwhmEk'
-SHEET_SEANCE = 'Feuille 1'
-SHEET_MAXS = 'Maxs'
+SHEET_NAME = 'Feuille 1'
 
 @st.cache_resource
 def get_gsheet_client():
@@ -32,7 +31,7 @@ def load_sheet(sheet_id, sheet_name):
 
 def append_row_to_sheet(sheet, row):
     if not sheet.get_all_values():
-        headers = ["Athlète", "Date", "Jour", "Type", "Exercices", "Sommeil", "Hydratation", "Nutrition", "RPE", "Fatigue", "Notes"]
+        headers = ["Athlète", "Date", "Jour", "Type", "Catégorie", "Exercice", "Valeur", "Unité", "Commentaire"]
         sheet.append_row(headers)
     sheet.append_row(row)
 
@@ -46,11 +45,17 @@ EXOS_MUSCU = [
     "Pull over avec haltère", "Développé couché strict", "Développé couché avec mouvement du bassin"
 ]
 
-EXOS_TESTS = [
-    "Watt max vélo", "Saut en longueur sans élan",
-    "Lancer de medecine ball de 4kg en touche",
-    "Lancer de poids avant 4kg", "Lancer de poids arrière 4kg",
-    "Lancer de javelot sans élan", "Lancer de javelot sur un hop"
+PERF_PHYSIQUE = [
+    ("Watt max vélo", "Watt"),
+    ("Saut en longueur sans élan", "m")
+]
+
+LANCERS = [
+    ("Lancer de medecine ball de 4kg en touche", "m"),
+    ("Lancer de poids avant 4kg", "m"),
+    ("Lancer de poids arrière 4kg", "m"),
+    ("Lancer de javelot sans élan", "m"),
+    ("Lancer de javelot sur un hop", "m")
 ]
 
 # ---------- INTERFACE PRINCIPALE ----------
@@ -63,40 +68,40 @@ selected_date = st.date_input("🗕️ Choisis la date :", date.today())
 weekday = selected_date.weekday()
 jour = JOURS[weekday]
 
-# ---------- ONGLET PRINCIPAL ----------
+# ---------- ONGLET SÉANCE MUSCU ----------
 tab_seance, tab_sensations, tab_maxs = st.tabs(["🖍️ Muscu", "🛌 Sensations", "🔺 Maxs"])
 
 with tab_seance:
-    with st.form("form_muscu"):
-        exercices = []
-        selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
+    st.subheader("💪 Séance de muscu")
+    exercices = []
+    selected_exos = st.multiselect("Exercices muscu :", EXOS_MUSCU)
 
-        if selected_exos:
-            for exo in selected_exos:
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
-                with col2:
-                    reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
-                with col3:
-                    series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
-                exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
+    for exo in selected_exos:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            charge = st.number_input(f"Charge ({exo})", min_value=0.0, step=0.5, key=f"charge_{exo}")
+        with col2:
+            reps = st.number_input(f"Répétitions ({exo})", min_value=0, step=1, key=f"reps_{exo}")
+        with col3:
+            series = st.number_input(f"Séries ({exo})", min_value=0, step=1, key=f"series_{exo}")
+        exercices.append(f"{exo} – {charge}kg x {reps} x {series}")
 
-        submit = st.form_submit_button("✅ Enregistrer")
-        if submit:
-            new_row = [
-                athlete,
-                selected_date.strftime("%Y-%m-%d"),
-                jour,
-                "Muscu",
-                "; ".join(exercices),
-                "", "", "", "", "", ""
-            ]
-            df, sheet = load_sheet(SHEET_ID, SHEET_SEANCE)
-            append_row_to_sheet(sheet, new_row)
-            st.success("Séance enregistrée ✅")
+    if st.button("✅ Enregistrer la séance"):
+        new_row = [
+            athlete,
+            selected_date.strftime("%Y-%m-%d"),
+            jour,
+            "Muscu",
+            "",
+            "; ".join(exercices),
+            "", "", "", "", ""
+        ]
+        df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
+        append_row_to_sheet(sheet, new_row)
+        st.success("Séance enregistrée ✅")
 
 with tab_sensations:
+    st.subheader("🧘 Suivi des sensations")
     with st.form("form_sensations"):
         sommeil = st.slider("🌙 Sommeil", 0, 10, 5)
         hydratation = st.slider("💧 Hydratation", 0, 10, 5)
@@ -113,49 +118,52 @@ with tab_sensations:
                 jour,
                 "Sensations",
                 "",
+                "",
                 sommeil, hydratation, nutrition, rpe, fatigue, notes
             ]
-            df, sheet = load_sheet(SHEET_ID, SHEET_SEANCE)
+            df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
             append_row_to_sheet(sheet, new_row)
             st.success("Sensations enregistrées ✅")
 
 with tab_maxs:
-    st.subheader("📝 Enregistrement des maxs")
-    with st.form("form_max"):
-        selected_maxs = st.multiselect("Exercice testé :", EXOS_MUSCU + EXOS_TESTS)
-        max_entries = []
+    with st.form("form_maxs"):
+        st.subheader("🏋️‍♀️ Maxs Musculation")
+        maxs_muscu = {}
+        for exo in EXOS_MUSCU:
+            val = st.number_input(f"{exo} (kg)", min_value=0.0, step=0.5, key=f"max_{exo}")
+            if val > 0:
+                maxs_muscu[exo] = val
 
-        for exo in selected_maxs:
-            if "watt" in exo.lower():
-                unite = "Watts"
-            elif "saut" in exo.lower() or "lancer" in exo.lower():
-                unite = "m"
-            else:
-                unite = "kg"
+        st.subheader("🚴‍♂️ Performances physiques")
+        perf_physique = {}
+        for nom, unite in PERF_PHYSIQUE:
+            val = st.number_input(f"{nom} ({unite})", min_value=0.0, step=0.1, key=f"perf_{nom}")
+            if val > 0:
+                perf_physique[nom] = (val, unite)
 
-            valeur = st.number_input(f"{exo} ({unite})", min_value=0.0, step=0.1, key=f"max_{exo}")
-            max_entries.append(f"{exo} : {valeur} {unite}")
+        st.subheader("🏹 Maxs Lancers")
+        maxs_lancers = {}
+        for nom, unite in LANCERS:
+            val = st.number_input(f"{nom} ({unite})", min_value=0.0, step=0.1, key=f"lancer_{nom}")
+            if val > 0:
+                maxs_lancers[nom] = (val, unite)
 
-        submit_max = st.form_submit_button("✅ Enregistrer le test")
-        if submit_max:
-            new_row = [
-                athlete,
-                selected_date.strftime("%Y-%m-%d"),
-                jour,
-                "Max",
-                "; ".join(max_entries),
-                "", "", "", "", "", ""
-            ]
-            df, sheet = load_sheet(SHEET_ID, SHEET_MAXS)
-            append_row_to_sheet(sheet, new_row)
-            st.success("Max enregistré ✅")
+        commentaire = st.text_area("🗒️ Commentaire général (facultatif)")
 
-    st.subheader("📊 Historique des maxs")
-    df_maxs, _ = load_sheet(SHEET_ID, SHEET_MAXS)
-    athlète_filtré = st.selectbox("🔎 Filtrer par athlète :", ATHLETES, key="filtre_max")
-    df_filtré = df_maxs[df_maxs["Athlète"] == athlète_filtré]
+        submit = st.form_submit_button("✅ Enregistrer les maxs")
+        if submit:
+            df, sheet = load_sheet(SHEET_ID, SHEET_NAME)
 
-    if df_filtré.empty:
-        st.info("Aucun max enregistré pour cet athlète.")
-    else:
-        st.dataframe(df_filtré)
+            for exo, val in maxs_muscu.items():
+                row = [athlete, selected_date.strftime("%Y-%m-%d"), jour, "Max", "Muscu", exo, val, "kg", commentaire]
+                append_row_to_sheet(sheet, row)
+
+            for nom, (val, unite) in perf_physique.items():
+                row = [athlete, selected_date.strftime("%Y-%m-%d"), jour, "Max", "Perf physique", nom, val, unite, commentaire]
+                append_row_to_sheet(sheet, row)
+
+            for nom, (val, unite) in maxs_lancers.items():
+                row = [athlete, selected_date.strftime("%Y-%m-%d"), jour, "Max", "Lancer", nom, val, unite, commentaire]
+                append_row_to_sheet(sheet, row)
+
+            st.success("Maxs enregistrés ✅")
