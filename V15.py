@@ -69,7 +69,7 @@ weekday = selected_date.weekday()
 jour = JOURS[weekday]
 
 # ---------- ONGLET SÉANCE MUSCU ----------
-tab_seance, tab_sensations, tab_maxs = st.tabs(["🖍️ Muscu", "🔺 Maxs"])
+tab_seance, tab_maxs = st.tabs(["🖍️ Muscu", "🔺 Maxs"])
 
 with tab_seance:
     st.subheader("💪 Séance de muscu")
